@@ -1,26 +1,46 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import theme from './theme'
+import store from './redux/store';
+import ContainerApp from './components/ComponentsForApp/ContainerApp/ContainerApp';
+import { urls } from './urls';
+import ContainerPage from './components/ComponentsForPage/ContainerPage/ContainerPage';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    return (
+        <MuiThemeProvider theme={theme}>
+    
+        <Provider store={store}>
+
+            {
+                // This proyect uses the url.sts file to manage the urls
+            }
+
+            <Router>
+                <Switch>
+                    {
+                        // the page container has all the components
+                        // that are part of Crecer´s single page
+                    }
+                    <Route path={urls.page.home}>
+                        <ContainerPage  />
+                    </Route>
+
+                    {
+                        // the app container has all the components
+                        // that are part of Crecer App
+                    }
+                    <Route path={urls.app.index}>
+                        <ContainerApp/>
+                    </Route>
+                </Switch>
+            </Router>
+        </Provider>
+        </MuiThemeProvider>
+    );
 }
 
 export default App;
