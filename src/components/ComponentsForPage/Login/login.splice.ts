@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../../redux/store';
 import jwtDecoded from 'jwt-decode';
 import Cookie from 'js-cookie';
+import axios from 'axios';
 
 // interface for the login form
 export interface LoginForm {
@@ -43,21 +44,8 @@ export const login = createAsyncThunk(
     async (form: LoginForm) => {
         // on the package.json there is a proxy configuration
         // with the local host from the API crecer (host: 5000)
-        return fetch('/api/user/login', {
-            method: 'POST',
-            mode: 'cors',
-            redirect: 'error',
-            headers: {
-                'content-type': 'application/json;charset=UTF-8',
-            },
-            body: JSON.stringify(form)
-
-        }).then((res) => 
-            res.json()
-
-        ).catch((error) => {
-            console.log(error.message)
-        });
+        const res = await axios.post('/api/signin', form);
+        return res.data.token;
     }
 );
 
