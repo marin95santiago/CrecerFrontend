@@ -12,6 +12,7 @@ import InternalTransactionForm from '../InternalTransaction/InternalTransactionF
 import CashReceiptReport from '../CashReceipt/CashReceiptReport';
 import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport';
 import IndexApp from '../Index/IndexApp';
+import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute';
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) =>
@@ -51,29 +52,41 @@ export default function ContainerApp() {
                     }
                     <Switch>
                         <Route path={urls.app.main.home}>
-                            <IndexApp />
+                            <ProtectRoute>
+                                <IndexApp />
+                            </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.third.form}>
-                            <ThirdForm />
+                            <ProtectRoute>
+                                <ThirdForm />
+                            </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.third.thirdMigrationForm}>
-                            <ThirdMigration />
+                            <ProtectRoute>
+                                <ThirdMigration />
+                            </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.cashReceipt.form}>
-                            <CashReceiptForm/>
+                            <ProtectRoute>
+                                <CashReceiptForm/>
+                            </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.cashReceipt.report}>
-                            <CashReceiptReport />
+                            <ProtectRoute>
+                                <CashReceiptReport />
+                            </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.internalTransaction.form}>
-                            <InternalTransactionForm />
+                            <ProtectRoute>
+                                <InternalTransactionForm />
+                            </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.internalTransaction.report}>
-                            <InternalTransactionReport />
+                            <ProtectRoute>
+                                <InternalTransactionReport />
+                            </ProtectRoute>
                         </Route>
-                        
                     </Switch>
-              
                 </div>
             </div>
         </div>
