@@ -28,7 +28,7 @@ class UserService {
   async getUsers(token: string) {
 
     try {
-      const responseApi = await axios.get('/api/v2/users', {
+      const responseApi = await axios.get('/api/v2/user', {
         headers: {
           authorization: token
         }
@@ -41,7 +41,7 @@ class UserService {
 
   async saveUser(userData: User, token: string) {
     try {
-      const responseApi = await axios.post('/api/v2/users', userData, {
+      const responseApi = await axios.post('/api/v2/user', userData, {
         headers: {
           authorization: token
         }
