@@ -18,6 +18,7 @@ import {
   ExpandLess,
   ExpandMore,
   ContactMail,
+  QueueRounded
 } from '@material-ui/icons'
 import { Collapse, Typography } from '@material-ui/core'
 import permissions from '../../../permissions.json'
@@ -143,6 +144,13 @@ const initState = {
       },
       {
         id: '005',
+        title: 'Productos',
+        icon: <QueueRounded/>,
+        permission: permissions.item.view,
+        url: urls.app.main.item.form
+      },
+      {
+        id: '006',
         title: 'Reporte de recibos',
         icon: <FindInPage />,
         permission: permissions.movement_receipt.view,

@@ -11,6 +11,7 @@ import ThirdMigration from '../Third/ThirdMigration';
 import InternalTransactionForm from '../InternalTransaction/InternalTransactionForm';
 import CashReceiptReport from '../CashReceipt/CashReceiptReport';
 import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport';
+import ItemForm from '../Item/ItemForm';
 import IndexApp from '../Index/IndexApp';
 import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute';
 
@@ -64,6 +65,11 @@ export default function ContainerApp() {
                         <Route path={urls.app.main.third.thirdMigrationForm}>
                             <ProtectRoute>
                                 <ThirdMigration />
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.item.form}>
+                            <ProtectRoute>
+                                <ItemForm/>
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.cashReceipt.form}>

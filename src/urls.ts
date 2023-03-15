@@ -19,6 +19,9 @@ export const urls = {
           form: '/app/internal-transaction/form',
           report: '/app/internal-transaction/report'
         },
+        item: {
+          form: '/app/item/form'
+        }
       }
     }
 }
