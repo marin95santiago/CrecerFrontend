@@ -20,5 +20,11 @@
     "create": "movement_internal_create",
     "update": "movement_internal_update",
     "delete": "movement_internal_delete"
+  },
+  "item": {
+    "view": "item_view",
+    "create": "item_create",
+    "update": "item_update",
+    "delete": "item_delete"
   }
 }
