@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { Divider, FormHelperText, Grid, IconButton, MenuItem, Select, Typography } from '@material-ui/core';
-import { ThirdMigrationForm } from './third.slice';
 import { NoteAdd } from '@material-ui/icons';
 
 // -------------- Styles --------------
@@ -84,7 +83,7 @@ export default function ThirdMigration() {
 
     const classes = useStyles();
 
-    const [ form, setForm ] = useState<ThirdMigrationForm>(initStateForm);
+    const [ form, setForm ] = useState(initStateForm);
     const [ newThirdOptions, setNewThirdOptions ] = useState(texts.body.field.lastThird.options);
 
     // HandleChange is the handler to update the state

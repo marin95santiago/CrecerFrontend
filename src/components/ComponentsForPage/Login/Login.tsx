@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
-import UserContext from '../../../contexts/User';
-import { UserContextType } from '../../../schemas/User';
+import UserContext from '../../../contexts/User'
+import { UserContextType } from '../../../schemas/User'
 import UserService from '../../../services/User/index'
-import { urls } from '../../../urls';
+import { urls } from '../../../urls'
 import { ServerError } from '../../../schemas/Error'
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
+import Avatar from '@material-ui/core/Avatar'
+import Button from '@material-ui/core/Button'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import TextField from '@material-ui/core/TextField'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import Link from '@material-ui/core/Link'
+import Grid from '@material-ui/core/Grid'
+import Box from '@material-ui/core/Box'
+import Typography from '@material-ui/core/Typography'
+import { makeStyles, Theme } from '@material-ui/core/styles'
+import Container from '@material-ui/core/Container'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-}));
+}))
 
 // - in this part all the component texts are housed
 const texts = {
@@ -97,7 +97,7 @@ function Copyright() {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
-  );
+  )
 }
 
 export default function SignIn() {
@@ -106,9 +106,9 @@ export default function SignIn() {
     UserContext
   ) as UserContextType
 
-  const history = useHistory();
-  const classes = useStyles();
-  const [state, setState] = useState<LoginForm>(initState);
+  const history = useHistory()
+  const classes = useStyles()
+  const [state, setState] = useState<LoginForm>(initState)
 
 
   React.useEffect(() => {
@@ -133,7 +133,6 @@ export default function SignIn() {
     try {
       const userService = new UserService()
       const user = await userService.login(state.email, state.password)
-      console.log(user)
       if (user) {
         setUserContext(user)
       }
