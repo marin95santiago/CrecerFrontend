@@ -1,4 +1,5 @@
 import axios from 'axios'
+import itemMapper from '../../mappers/Item/item.mapper'
 import { Item } from '../../schemas/Item'
 
 class ItemService {
@@ -10,6 +11,25 @@ class ItemService {
         }
       })
       return responseApi.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getItems(token: string) : Promise<Item[]> {
+    try {
+      const responseApi = await axios.get('/api/v2/item', {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      })
+
+      const items = responseApi.data.map((item:any) => {
+        return itemMapper(item)
+      })
+
+      return items
+
     } catch (error) {
       throw error
     }
