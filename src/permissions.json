@@ -1,0 +1,34 @@
+{
+  "home": {
+    "view": "home_view"
+  },
+  "third": {
+    "view": "third_view",
+    "create": "third_create",
+    "update": "third_update",
+    "delete": "third_delete",
+    "migrate": "third_migrate"
+  },
+  "movement_receipt": {
+    "view": "movement_receipt_view",
+    "create": "movement_receipt_create",
+    "update": "movement_receipt_update",
+    "delete": "movement_receipt_delete"
+  },
+  "movement_internal": {
+    "view": "movement_internal_view",
+    "create": "movement_internal_create",
+    "update": "movement_internal_update",
+    "delete": "movement_internal_delete"
+  },
+  "item": {
+    "view": "item_view",
+    "create": "item_create",
+    "update": "item_update",
+    "delete": "item_delete"
+  },
+  "electronic_bill": {
+    "view": "electronic_bill_view",
+    "create": "electronic_bill_create"
+  }
+}

@@ -15,10 +15,16 @@ export const urls = {
           form: '/app/cash-receipt/form',
           report: '/app/cash-receipt/report'
         },
+        electronicBill: {
+          form: '/app/electronic-bill/form'
+        },
         internalTransaction: {
           form: '/app/internal-transaction/form',
           report: '/app/internal-transaction/report'
         },
+        item: {
+          form: '/app/item/form'
+        }
       }
     }
 }
