@@ -12,6 +12,7 @@ import InternalTransactionForm from '../InternalTransaction/InternalTransactionF
 import CashReceiptReport from '../CashReceipt/CashReceiptReport';
 import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport';
 import ItemForm from '../Item/ItemForm';
+import ElectronicBillForm from '../ElectronicBill/ElectronicBillForm';
 import IndexApp from '../Index/IndexApp';
 import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute';
 
@@ -75,6 +76,11 @@ export default function ContainerApp() {
                         <Route path={urls.app.main.cashReceipt.form}>
                             <ProtectRoute>
                                 <CashReceiptForm/>
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.electronicBill.form}>
+                            <ProtectRoute>
+                                <ElectronicBillForm />
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.cashReceipt.report}>

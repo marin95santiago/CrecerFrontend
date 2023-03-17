@@ -151,13 +151,20 @@ const initState = {
       },
       {
         id: '006',
+        title: 'Factura electrónica',
+        icon: <QueueRounded/>,
+        permission: permissions.electronic_bill.view,
+        url: urls.app.main.electronicBill.form
+      },
+      {
+        id: '007',
         title: 'Reporte de recibos',
         icon: <FindInPage />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.cashReceipt.report
       },
       {
-        id: '006',
+        id: '008',
         title: 'Reporte de transacciones',
         icon: <Assignment />,
         permission: permissions.movement_internal.view,

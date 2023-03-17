@@ -26,5 +26,9 @@
     "create": "item_create",
     "update": "item_update",
     "delete": "item_delete"
+  },
+  "electronic_bill": {
+    "view": "electronic_bill_view",
+    "create": "electronic_bill_create"
   }
 }
