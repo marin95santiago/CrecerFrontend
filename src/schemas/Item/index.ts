@@ -7,4 +7,8 @@ export interface Item {
     code: number
     description: string
   }
+  itemType?: {
+    code: number
+    description: string
+  } 
 }
