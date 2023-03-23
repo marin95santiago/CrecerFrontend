@@ -252,7 +252,7 @@ export default function MainMenu() {
             state.menu.items.map(item => (
               userContext.permissions.some(permission => permission === item.permission) ? 
               (
-                <React.Fragment>
+                <React.Fragment key={item.id}>
                   <ListItem
                     button
                     selected={state.selected === item.id}
@@ -292,6 +292,7 @@ export default function MainMenu() {
                                 userContext.permissions.some(permission => permission === indexedItem.permission) ?
                                 (
                                   <ListItem
+                                    key={indexedItem.id}
                                     button
                                     className={classes.nested}
                                     selected={state.selected === indexedItem.id}

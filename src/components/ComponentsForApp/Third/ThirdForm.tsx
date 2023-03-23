@@ -242,7 +242,10 @@ export default function ThirdForm() {
     try {
       const thirdService = new ThirdService()
       const thirdCreated = await thirdService.saveThird(state.form, userContext.token ?? '')
-      setState(initState)
+      setState({
+        ...initState,
+        cities: state.cities
+      })
       return toast.success(`El tercero ${thirdCreated.document} fue creado con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -368,7 +371,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.name.one.name.name}
-                    value={state.form.name}
+                    value={state.form.name ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -380,7 +383,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.name.one.lastname.name}
-                    value={state.form.lastname}
+                    value={state.form.lastname ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -396,7 +399,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.dv.name}
-                    value={state.form.dv}
+                    value={state.form.dv ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -408,7 +411,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.name.two.businessName.name}
-                    value={state.form.businessName}
+                    value={state.form.businessName ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -508,7 +511,7 @@ export default function ThirdForm() {
           <Grid item md={6} sm={6} xs={12}>
             <Select
               name={texts.body.field.city.name}
-              value={state.form.city?.code}
+              value={state.form.city?.code ?? ''}
               variant="outlined"
               fullWidth
             >
