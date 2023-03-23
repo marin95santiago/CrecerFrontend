@@ -23,5 +23,9 @@ export interface Third {
   businessName?: string
   phone: string
   address: string
+  city?: {
+    code: string
+    description: string
+  }
   email: string
 }

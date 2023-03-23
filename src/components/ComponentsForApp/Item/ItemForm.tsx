@@ -74,6 +74,16 @@ const texts = {
           { description: 'Metro cúbico', code: '594' },
           { description: 'Metro cuadrado', code: '472' },
         ]
+      },
+      itemType: {
+        name: 'itemType',
+        helperText: 'Tipo de producto',
+        options: [
+          { description: 'UNSPSC', code: '1' },
+          { description: 'GTIN', code: '2' },
+          { description: 'Partida Arancelarias', code: '3' },
+          { description: 'Estándar de adopción del contribuyente', code: '4' }
+        ]
       }
     }
   }
@@ -89,7 +99,8 @@ const initState: State = {
     code: '',
     description: '',
     price: undefined,
-    unitMeasure: undefined
+    unitMeasure: undefined,
+    itemType: undefined
   }
 }
 
@@ -236,6 +247,29 @@ export default function ItemForm() {
               }
             </Select>
             <FormHelperText>{texts.body.field.unitMeasure.helperText}</FormHelperText>
+          </Grid>
+
+          {/* ----- Form: item type ------*/}
+          <Grid item md={6} sm={6} xs={12}>
+            <Select
+              name={texts.body.field.itemType.name}
+              value={state.form.itemType?.code}
+              variant="outlined"
+              fullWidth
+            >
+              {
+                texts.body.field.itemType.options.map((item) =>
+                  <MenuItem
+                    key={item.description}
+                    value={item.code}
+                    onClick={() => handleChangeSelect(texts.body.field.itemType.name, item)}
+                  >
+                    {item.description}
+                  </MenuItem>
+                )
+              }
+            </Select>
+            <FormHelperText>{texts.body.field.itemType.helperText}</FormHelperText>
           </Grid>
 
           <Grid item md={12} sm={6} xs={12} className={classes.alignRight}>

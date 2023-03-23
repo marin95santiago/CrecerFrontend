@@ -8,6 +8,10 @@ export default function itemMapper(item: any | unknown): Item {
     unitMeasure: {
       code: item.unitMeasure?.code ?? '',
       description: item.unitMeasure?.description ?? ''
+    } ?? undefined,
+    itemType: {
+      code: item.itemType?.code ?? 0,
+      description: item.itemType?.description ?? ''
     } ?? undefined
   }
 }

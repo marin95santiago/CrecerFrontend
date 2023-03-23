@@ -14,6 +14,7 @@ export default function thirdMapper(third: any | unknown): Third {
     businessName: third.businessName ?? undefined,
     phone: third.phone ?? '',
     address: third.address ?? '',
+    city: third.city ?? undefined,
     email: third.email ?? ''
   }
 }
