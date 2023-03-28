@@ -1,5 +1,6 @@
 import axios from 'axios'
 import jwt from 'jwt-decode'
+import entityMapper from '../../mappers/Entity/entity.mapper'
 import userMapper from '../../mappers/User/user.mapper'
 import { User } from '../../schemas/User'
 
@@ -15,11 +16,16 @@ class UserService {
       const response = responseApi.data
       if (!response.token) throw new Error('No recuperó token')
       const tokenData = jwt<jwtDecode>(response.token)
-      const userData = tokenData.data
+      const userData = tokenData.data.user
+      const entityData = tokenData.data.entity
       userData.token = response.token
       const user = userMapper(userData)
+      const entity = entityMapper(entityData)
 
-      return user
+      return {
+        user,
+        entity
+      }
     } catch (error) {
       throw error
     }
