@@ -28,6 +28,11 @@ export interface Entity {
   apiKeyPlemsi?: string
   state: string
   resolution?: string
-  resolutionText?: string,
+  resolutionText?: string
   lastElectronicBillNumber?: number
+}
+
+export type EntityContextType = {
+  entityContext: Entity;
+  setEntityContext: (value: Entity) => void;
 }

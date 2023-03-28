@@ -14,27 +14,27 @@ import {
 const data = [
     {
         name: "Enero",
-        uv: 4000,
+        uv: 0,
     },
     {
         name: "Febrero",
-        uv: 3000,
+        uv: 0,
     },
     {
         name: "Marzo",
-        uv: 2000,
+        uv: 0,
     },
     {
         name: "Abril",
-        uv: 2780,
+        uv: 0,
     },
     {
         name: "Mayo",
-        uv: 5698,
+        uv: 0,
     },
     {
         name: "Junio",
-        uv: 6657,
+        uv: 0,
     }
 ];
 

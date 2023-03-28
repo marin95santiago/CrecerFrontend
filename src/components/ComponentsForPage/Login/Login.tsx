@@ -4,6 +4,8 @@ import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
+import EntityContext from '../../../contexts/Entity'
+import { EntityContextType } from '../../../schemas/Entity'
 import UserService from '../../../services/User/index'
 import { urls } from '../../../urls'
 import { ServerError } from '../../../schemas/Error'
@@ -106,6 +108,10 @@ export default function SignIn() {
     UserContext
   ) as UserContextType
 
+  const { setEntityContext } = React.useContext(
+    EntityContext
+  ) as EntityContextType
+
   const history = useHistory()
   const classes = useStyles()
   const [state, setState] = useState<LoginForm>(initState)
@@ -132,9 +138,10 @@ export default function SignIn() {
   async function onLogin() {
     try {
       const userService = new UserService()
-      const user = await userService.login(state.email, state.password)
-      if (user) {
-        setUserContext(user)
+      const data = await userService.login(state.email, state.password)
+      if (data) {
+        setUserContext(data.user)
+        setEntityContext(data.entity)
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
