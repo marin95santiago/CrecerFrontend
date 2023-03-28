@@ -13,21 +13,23 @@ import {
   Typography,
   Button,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Box,
+  CircularProgress
 } from '@material-ui/core'
 import { Cancel, NoteAdd, Save } from '@material-ui/icons'
-import TableComponent from '../Table/TableComponent'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
-// import { Third } from '../../../schemas/Third'
-import { ElectronicBill, ElectronicBillFormSchema } from '../../../schemas/ElectronicBill'
+import { ElectronicBillFormSchema } from '../../../schemas/ElectronicBill'
 import ElectronicBillService from '../../../services/ElectronicBill'
 import Utils from '../../../utils'
 import ItemTable from './ItemTable'
 import ThirdService from '../../../services/Third'
 import electronicBillMapper from '../../../mappers/ElectronicBill/electronicBill.mapper'
 import ItemService from '../../../services/Item'
+import PlemsiService from '../../../services/Plemsi'
+import { Link } from 'react-router-dom'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -35,6 +37,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '85%',
     margin: '10vh auto 10vh auto',
     height: 'auto'
+  },
+  loadingContainer: {
+    position: 'fixed',
+    width: '100%',
+    height: '100%',
+    bottom: '0',
+    right: '0',
+    background: '#BFBFBFBF',
+    opacity: 0.6,
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '50vh'
   },
   description: {
     fontWeight: 'bold',
@@ -150,13 +164,20 @@ const texts = {
         name: 'selectedTax',
         helperText: 'Escoja el impuesto',
         options: [
-          { code: '1', description: 'IVA' }
+          { code: '1', description: 'IVA' },
+          { code: '4', description: 'Impuesto al consumo' }
         ]
       },
       percent: {
         name: 'currentPercentTax',
         helperText: 'Porcentaje',
-        placeholder: '%'
+        placeholder: '%',
+        options: [
+          { code: 0, description: '0%' },
+          { code: 5, description: '5%' },
+          { code: 8, description: '8%' },
+          { code: 19, description: '19%' },
+        ]
       },
       total: {
         name: 'total',
@@ -194,6 +215,8 @@ interface State {
   items: any[]
   selectedItems: any[]
   thirds: any[]
+  preview?: string
+  loading: boolean
 }
 
 const initState: State = {
@@ -221,7 +244,9 @@ const initState: State = {
   applyTaxes: false,
   items: [],
   selectedItems: [],
-  thirds: []
+  thirds: [],
+  preview: undefined,
+  loading: false
 }
 
 export default function ElectronicBillForm() {
@@ -248,17 +273,42 @@ export default function ElectronicBillForm() {
     loadData()
   }, [])
 
-  // HandleChange is the handler to update the state
-  // of the state, while the user change the options 
-  // on an input select.
-  const handleChangeSelect = (name: string, item: { code: string, description: string }) => {
+  const handleChangeSelectValue = (name: string, value: string | number) => {
     setState({
       ...state,
       form: {
         ...state.form,
-        [name]: item
+        [name]: value
       }
     })
+  }
+
+  // HandleChangeSelect is the handler to update the state
+  // of the state, while the user change the options 
+  // on an input select.
+  const handleChangeSelect = (name: string, item: { code: string, description: string, price?: number, itemType?: any }) => {
+    if (item.price && item.itemType) {
+      setState({
+        ...state,
+        form: {
+          ...state.form,
+          [name]: item,
+          currentPrice: item.price,
+          currentItemType: {
+            code: item.itemType.code,
+            description: item.itemType.description
+          }
+        }
+      })
+    } else {
+      setState({
+        ...state,
+        form: {
+          ...state.form,
+          [name]: item
+        }
+      })
+    }
   }
 
   // HandleChange is the handler to update the state
@@ -281,11 +331,26 @@ export default function ElectronicBillForm() {
   // the state to redux (redux send the info to backend)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setState({
+      ...state,
+      loading: true
+    })
+
     try {
       const res = electronicBillMapper(state.form, state.selectedItems)
       const electronicBillService = new ElectronicBillService()
-      await electronicBillService.saveBill(res, userContext.token ?? '')
-      setState(initState)
+      const plemsiService = new PlemsiService()
+      const bill = await electronicBillService.saveBill(res, userContext.token ?? '')
+      const billPlemsi = await plemsiService.getBill(bill.entityInformation.apikey, bill.entityInformation.number)
+      setState({
+        ...initState,
+        applyTaxes: false,
+        items: state.items,
+        selectedItems: [],
+        thirds: state.thirds,
+        preview: billPlemsi,
+        loading: false
+      })
       return toast.success(`Factura creada con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -295,7 +360,6 @@ export default function ElectronicBillForm() {
         }
       }
     }
-   
   }
 
   // HandleTable is the handler to add and remove items
@@ -350,7 +414,6 @@ export default function ElectronicBillForm() {
 
   const onApplyTaxes = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target
-    console.log(checked)
     setState({
       ...state,
       applyTaxes: checked
@@ -361,9 +424,15 @@ export default function ElectronicBillForm() {
     setState(initState)
   }
 
+  const onPreviewBill = () => {
+    setState({
+      ...state,
+      preview: undefined
+    })
+  }
+
   return (
     <div className={classes.root}>
-
       {/* ----- Header -----*/}
       <React.Fragment>
         <Typography
@@ -415,7 +484,7 @@ export default function ElectronicBillForm() {
           <Grid item md={12} sm={12} xs={12}>
             <Select
               name={texts.body.field.third.name}
-              value={state.form.third?.document}
+              value={state.form.third?.document ?? ''}
               variant="outlined"
               fullWidth
             >
@@ -527,7 +596,7 @@ export default function ElectronicBillForm() {
           <Grid item md={8} sm={12} xs={12}>
             <Select
               name={texts.body.field.item.name}
-              value={state.form.currentItem?.code}
+              value={state.form.currentItem?.code ?? ''}
               variant="outlined"
               fullWidth
             >
@@ -602,7 +671,7 @@ export default function ElectronicBillForm() {
           <Grid item md={9} sm={6} xs={6}>
             {/* ----- apply taxes check ------*/}
             <FormControlLabel
-              control={<Checkbox name={texts.body.field.applyTaxes.name} value={state.applyTaxes} onChange={(e) => onApplyTaxes(e)} color="primary" />}
+              control={<Checkbox checked={state.applyTaxes} name={texts.body.field.applyTaxes.name} value={state.applyTaxes} onChange={(e) => onApplyTaxes(e)} color="primary" />}
               label={texts.body.field.applyTaxes.helperText}
             />
           </Grid>
@@ -635,17 +704,25 @@ export default function ElectronicBillForm() {
 
                   {/* ----- Form: percent ------*/}
                   <Grid item md={3} sm={6} xs={10}>
-                    <TextField
-                      required={true}
+                    <Select
                       name={texts.body.field.percent.name}
                       value={state.form.currentPercentTax}
-                      variant='outlined'
-                      type='number'
+                      variant="outlined"
                       fullWidth
-                      onChange={handleChange}
-                      helperText={texts.body.field.percent.helperText}
-                      placeholder={texts.body.field.percent.placeholder}
-                    />
+                    >
+                      {
+                        texts.body.field.percent.options.map((item) =>
+                          <MenuItem
+                            key={item.description}
+                            value={item.code}
+                            onClick={() => handleChangeSelectValue(texts.body.field.percent.name, item.code)}
+                          >
+                            {item.description}
+                          </MenuItem>
+                        )
+                      }
+                    </Select>
+                    <FormHelperText>{texts.body.field.percent.helperText}</FormHelperText>
                   </Grid>
                 </React.Fragment>
               ) : ''
@@ -729,9 +806,28 @@ export default function ElectronicBillForm() {
               <Cancel fontSize={"large"} color="secondary" />
             </IconButton>
           </Grid>
-
+          {
+            state.preview !== undefined ?
+            (
+              <Grid item md={12} sm={12} xs={12} className={classes.alignRight}>
+                    <Link to={{ pathname: state.preview }} target='_blank' onClick={onPreviewBill}>
+                      Descargue su factura
+                    </Link>
+              </Grid>
+            ) : ''
+          }
         </Grid>
       </form>
+      {
+        state.loading ?
+        (
+          <div className={classes.loadingContainer}>
+            <Box>
+              <CircularProgress/>
+            </Box>
+          </div>
+        ) : ''
+      }
     </div>
   )
 }

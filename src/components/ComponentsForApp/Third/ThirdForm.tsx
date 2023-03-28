@@ -18,6 +18,8 @@ import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
 import { Third } from '../../../schemas/Third'
 import ThirdService from '../../../services/Third'
+import EntityService from '../../../services/Entity'
+import PlemsiService from '../../../services/Plemsi'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -138,6 +140,10 @@ const texts = {
         name: 'address',
         helperText: 'Escriba la dirección',
         placeholder: 'Dirección'
+      },
+      city: {
+        name: 'city',
+        helperText: 'Ciudad o municipio'
       }
     }
   }
@@ -146,6 +152,7 @@ const texts = {
 // ------------ Init state -----------
 interface State {
   form: Third
+  cities: any[]
 }
 
 const initState: State = {
@@ -173,8 +180,10 @@ const initState: State = {
     businessName: undefined,
     phone: '',
     address: '',
+    city: undefined,
     email: ''
-  }
+  },
+  cities: []
 }
 
 export default function ThirdForm() {
@@ -185,6 +194,20 @@ export default function ThirdForm() {
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
+
+  React.useEffect(() => {
+    async function loadData() {
+      const entityService = new EntityService()
+      const plemsiService = new PlemsiService()
+      const entity = await entityService.getEntity(userContext.token ?? '', userContext.entityId ?? '')
+      const cities = await plemsiService.getCities(entity.apiKeyPlemsi ?? '')
+      setState({
+        ...state,
+        cities
+      })
+    }
+    loadData()
+  }, [])
 
   // HandleChange is the handler to update the state
   // of the state, while the user change the options 
@@ -219,7 +242,10 @@ export default function ThirdForm() {
     try {
       const thirdService = new ThirdService()
       const thirdCreated = await thirdService.saveThird(state.form, userContext.token ?? '')
-      setState(initState)
+      setState({
+        ...initState,
+        cities: state.cities
+      })
       return toast.success(`El tercero ${thirdCreated.document} fue creado con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -345,7 +371,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.name.one.name.name}
-                    value={state.form.name}
+                    value={state.form.name ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -357,7 +383,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.name.one.lastname.name}
-                    value={state.form.lastname}
+                    value={state.form.lastname ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -373,7 +399,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.dv.name}
-                    value={state.form.dv}
+                    value={state.form.dv ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -385,7 +411,7 @@ export default function ThirdForm() {
                   <TextField
                     required={true}
                     name={texts.body.field.name.two.businessName.name}
-                    value={state.form.businessName}
+                    value={state.form.businessName ?? ''}
                     variant='outlined'
                     fullWidth
                     onChange={handleChange}
@@ -443,7 +469,7 @@ export default function ThirdForm() {
           </Grid>
 
           {/* ----- Form: item email ------*/}
-          <Grid item md={4} sm={6} xs={12}>
+          <Grid item md={6} sm={6} xs={12}>
             <TextField
               name={texts.body.field.email.name}
               value={state.form.email}
@@ -456,7 +482,7 @@ export default function ThirdForm() {
           </Grid>
 
           {/* ----- Form: item phone ------*/}
-          <Grid item md={4} sm={6} xs={12}>
+          <Grid item md={6} sm={6} xs={12}>
             <TextField
               name={texts.body.field.phone.name}
               value={state.form.phone}
@@ -469,7 +495,7 @@ export default function ThirdForm() {
           </Grid>
 
           {/* ----- Form: item address ------*/}
-          <Grid item md={4} sm={6} xs={12}>
+          <Grid item md={6} sm={6} xs={12}>
             <TextField
               name={texts.body.field.address.name}
               value={state.form.address}
@@ -479,6 +505,29 @@ export default function ThirdForm() {
               helperText={texts.body.field.address.helperText}
               placeholder={texts.body.field.address.placeholder}
             />
+          </Grid>
+
+          {/* ----- Form: City ------*/}
+          <Grid item md={6} sm={6} xs={12}>
+            <Select
+              name={texts.body.field.city.name}
+              value={state.form.city?.code ?? ''}
+              variant="outlined"
+              fullWidth
+            >
+              {
+                state.cities.map((item) =>
+                  <MenuItem
+                    key={item.code}
+                    value={item.code}
+                    onClick={() => handleChangeSelect(texts.body.field.city.name, item)}
+                  >
+                    {item.description}
+                  </MenuItem>
+                )
+              }
+            </Select>
+            <FormHelperText>{texts.body.field.city.helperText}</FormHelperText>
           </Grid>
 
           <Grid item md={12} sm={6} xs={12} className={classes.alignRight}>
