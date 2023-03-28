@@ -15,7 +15,6 @@ import {
   FormControlLabel,
   Checkbox,
   Box,
-  LinearProgress,
   CircularProgress
 } from '@material-ui/core'
 import { Cancel, NoteAdd, Save } from '@material-ui/icons'
@@ -288,7 +287,6 @@ export default function ElectronicBillForm() {
   // of the state, while the user change the options 
   // on an input select.
   const handleChangeSelect = (name: string, item: { code: string, description: string, price?: number, itemType?: any }) => {
-    console.log(item)
     if (item.price && item.itemType) {
       setState({
         ...state,
@@ -337,15 +335,19 @@ export default function ElectronicBillForm() {
       ...state,
       loading: true
     })
+
     try {
       const res = electronicBillMapper(state.form, state.selectedItems)
       const electronicBillService = new ElectronicBillService()
       const plemsiService = new PlemsiService()
       const bill = await electronicBillService.saveBill(res, userContext.token ?? '')
       const billPlemsi = await plemsiService.getBill(bill.entityInformation.apikey, bill.entityInformation.number)
-      console.log(billPlemsi)
       setState({
         ...initState,
+        applyTaxes: false,
+        items: state.items,
+        selectedItems: [],
+        thirds: state.thirds,
         preview: billPlemsi,
         loading: false
       })
@@ -422,6 +424,13 @@ export default function ElectronicBillForm() {
     setState(initState)
   }
 
+  const onPreviewBill = () => {
+    setState({
+      ...state,
+      preview: undefined
+    })
+  }
+
   return (
     <div className={classes.root}>
       {/* ----- Header -----*/}
@@ -475,7 +484,7 @@ export default function ElectronicBillForm() {
           <Grid item md={12} sm={12} xs={12}>
             <Select
               name={texts.body.field.third.name}
-              value={state.form.third?.document}
+              value={state.form.third?.document ?? ''}
               variant="outlined"
               fullWidth
             >
@@ -587,7 +596,7 @@ export default function ElectronicBillForm() {
           <Grid item md={8} sm={12} xs={12}>
             <Select
               name={texts.body.field.item.name}
-              value={state.form.currentItem?.code}
+              value={state.form.currentItem?.code ?? ''}
               variant="outlined"
               fullWidth
             >
@@ -662,7 +671,7 @@ export default function ElectronicBillForm() {
           <Grid item md={9} sm={6} xs={6}>
             {/* ----- apply taxes check ------*/}
             <FormControlLabel
-              control={<Checkbox name={texts.body.field.applyTaxes.name} value={state.applyTaxes} onChange={(e) => onApplyTaxes(e)} color="primary" />}
+              control={<Checkbox checked={state.applyTaxes} name={texts.body.field.applyTaxes.name} value={state.applyTaxes} onChange={(e) => onApplyTaxes(e)} color="primary" />}
               label={texts.body.field.applyTaxes.helperText}
             />
           </Grid>
@@ -801,7 +810,7 @@ export default function ElectronicBillForm() {
             state.preview !== undefined ?
             (
               <Grid item md={12} sm={12} xs={12} className={classes.alignRight}>
-                    <Link to={{ pathname: state.preview }} target='_blank'>
+                    <Link to={{ pathname: state.preview }} target='_blank' onClick={onPreviewBill}>
                       Descargue su factura
                     </Link>
               </Grid>

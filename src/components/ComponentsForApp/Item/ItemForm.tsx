@@ -140,7 +140,7 @@ export default function ItemForm() {
   }
 
   // HandleSubmit is the handler to verify and send
-  // the state to redux (redux send the info to backend)
+  // the state to redux (redux send the info to backend
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
@@ -216,7 +216,7 @@ export default function ItemForm() {
           <Grid item md={6} sm={6} xs={10}>
             <TextField
               name={texts.body.field.price.name}
-              value={state.form.price}
+              value={state.form.price ?? ''}
               type='number'
               variant='outlined'
               fullWidth
@@ -230,7 +230,7 @@ export default function ItemForm() {
           <Grid item md={6} sm={6} xs={12}>
             <Select
               name={texts.body.field.unitMeasure.name}
-              value={state.form.unitMeasure?.code}
+              value={state.form.unitMeasure?.code ?? ''}
               variant="outlined"
               fullWidth
             >
@@ -253,7 +253,7 @@ export default function ItemForm() {
           <Grid item md={6} sm={6} xs={12}>
             <Select
               name={texts.body.field.itemType.name}
-              value={state.form.itemType?.code}
+              value={state.form.itemType?.code ?? ''}
               variant="outlined"
               fullWidth
             >
