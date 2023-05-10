@@ -7,6 +7,7 @@ import CashReceiptForm from '../CashReceipt/CashReceiptForm';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import ThirdForm from '../Third/ThirdForm';
+import ThirdList from '../Third/ThirdList';
 import ThirdMigration from '../Third/ThirdMigration';
 import InternalTransactionForm from '../InternalTransaction/InternalTransactionForm';
 import CashReceiptReport from '../CashReceipt/CashReceiptReport';
@@ -15,6 +16,7 @@ import ItemForm from '../Item/ItemForm';
 import ElectronicBillForm from '../ElectronicBill/ElectronicBillForm';
 import IndexApp from '../Index/IndexApp';
 import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute';
+import ElectronicBillList from '../ElectronicBill/ElectronicBillList';
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) =>
@@ -63,6 +65,11 @@ export default function ContainerApp() {
                                 <ThirdForm />
                             </ProtectRoute>
                         </Route>
+                        <Route path={urls.app.main.third.list}>
+                            <ProtectRoute>
+                                <ThirdList />
+                            </ProtectRoute>
+                        </Route>
                         <Route path={urls.app.main.third.thirdMigrationForm}>
                             <ProtectRoute>
                                 <ThirdMigration />
@@ -81,6 +88,11 @@ export default function ContainerApp() {
                         <Route path={urls.app.main.electronicBill.form}>
                             <ProtectRoute>
                                 <ElectronicBillForm />
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.electronicBill.list}>
+                            <ProtectRoute>
+                                <ElectronicBillList />
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.cashReceipt.report}>

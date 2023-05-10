@@ -1,5 +1,6 @@
 import axios from 'axios'
 import jwt from 'jwt-decode'
+import Cookies from 'js-cookie'
 import entityMapper from '../../mappers/Entity/entity.mapper'
 import userMapper from '../../mappers/User/user.mapper'
 import { User } from '../../schemas/User'
@@ -21,6 +22,7 @@ class UserService {
       userData.token = response.token
       const user = userMapper(userData)
       const entity = entityMapper(entityData)
+      Cookies.set('auth', response.token)
 
       return {
         user,

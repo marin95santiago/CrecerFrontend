@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useState } from 'react'
 import { User } from '../../schemas/User/index'
+import Utils from '../../utils'
 
 const Context = createContext({})
 
@@ -7,7 +8,7 @@ interface Props {
   children: ReactNode
 }
 
-const initialState: User = {
+export const initialContextUserState: User = {
   id: '',
   email: '',
   name: '',
@@ -18,7 +19,10 @@ const initialState: User = {
 }
 
 export function UserContextProvider({ children }: Props) {
-  const [userContext, setUserContext] = useState<User>(initialState)
+  const auth = Utils.getUserByCookieAuth()
+
+  const [userContext, setUserContext] = useState<User>(auth ?? initialContextUserState)
+
   return (
     <Context.Provider value={{ userContext, setUserContext }}>
       {children}

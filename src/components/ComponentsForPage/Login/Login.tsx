@@ -135,7 +135,8 @@ export default function SignIn() {
 
   // HandleSubmit is the handler to verify and send
   // the state to redux (redux send the info to backend)
-  async function onLogin() {
+  async function onLogin(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
     try {
       const userService = new UserService()
       const data = await userService.login(state.email, state.password)
@@ -172,7 +173,7 @@ export default function SignIn() {
         </Typography>
 
         {/* ------- *Body ----------- */}
-        <form className={classes.state} noValidate>
+        <form className={classes.state} onSubmit={onLogin} noValidate>
 
           {/* ----- Form: item **email ------*/}
           <TextField
@@ -210,7 +211,7 @@ export default function SignIn() {
           />
 
           <Button
-            onClick={onLogin}
+            type="submit"
             fullWidth
             variant="contained"
             color="primary"
