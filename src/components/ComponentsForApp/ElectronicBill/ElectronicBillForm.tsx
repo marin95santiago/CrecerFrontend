@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
+import { Link, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import {
@@ -20,18 +21,19 @@ import {
 import { Cancel, NoteAdd, Save } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
+import EntityContext from '../../../contexts/Entity'
+import { EntityContextType } from '../../../schemas/Entity'
 import { UserContextType } from '../../../schemas/User'
 import { ElectronicBillFormSchema } from '../../../schemas/ElectronicBill'
 import ElectronicBillService from '../../../services/ElectronicBill'
 import Utils from '../../../utils'
 import ItemTable from './ItemTable'
 import ThirdService from '../../../services/Third'
-import electronicBillMapper from '../../../mappers/ElectronicBill/electronicBill.mapper'
+import ElectronicBillMapper from '../../../mappers/ElectronicBill/electronicBill.mapper'
 import ItemService from '../../../services/Item'
 import PlemsiService from '../../../services/Plemsi'
-import { Link } from 'react-router-dom'
 
-// -------------- Styles --------------
+// -------------- Styles ---------------
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: '85%',
@@ -129,7 +131,7 @@ const texts = {
         helperText: 'Escoja el producto a facturar',
         options: [
           {
-            unitMeasure: { code: 12, description: 'Unidad'},
+            unitMeasure: { code: 12, description: 'Unidad' },
             description: 'Producto de prueba',
             code: '1',
             price: 2500
@@ -217,6 +219,7 @@ interface State {
   thirds: any[]
   preview?: string
   loading: boolean
+  disabledForm: boolean
 }
 
 const initState: State = {
@@ -238,7 +241,7 @@ const initState: State = {
     total: 0,
     totalTaxes: 0,
     totalToPay: 0,
-    selectedTax: { code: '', description: ''},
+    selectedTax: { code: '', description: '' },
     currentPercentTax: 0
   },
   applyTaxes: false,
@@ -246,30 +249,108 @@ const initState: State = {
   selectedItems: [],
   thirds: [],
   preview: undefined,
-  loading: false
+  loading: false,
+  disabledForm: false
 }
 
 export default function ElectronicBillForm() {
 
   const classes = useStyles()
+  const { search } = useLocation()
 
   const [state, setState] = useState(initState)
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
 
+  const { entityContext } = React.useContext(
+    EntityContext
+  ) as EntityContextType
+
   React.useEffect(() => {
+
     async function loadData() {
-      const thirdService = new ThirdService()
-      const itemService = new ItemService()
-      const thirds = await thirdService.getThirds(userContext.token || '')
-      const items = await itemService.getItems(userContext.token || '')
-      setState({
-        ...state,
-        thirds: thirds,
-        items: items
-      })
+      try {
+        //Search bill on URL
+        const params = Utils.parseQueryString(search)
+        if (params.length > 0) {
+          let number = 0
+          let copy = false
+          let billPlemsi = undefined
+          let thirds = []
+          let items = []
+
+          params.forEach(param => {
+            if (param.number) {
+              number = Number(param.number)
+            }
+
+            if (param.copy) {
+              copy = true
+            }
+          })
+
+          setState({
+            ...state,
+            loading: true
+          })
+
+          const electronicBillService = new ElectronicBillService()
+          const bill = await electronicBillService.getBillByNumber(userContext.token ?? '', number)
+
+          if (!copy) {
+            const plemsiService = new PlemsiService()
+            billPlemsi = await plemsiService.getBill(entityContext.apiKeyPlemsi ?? '', bill.form.number ?? 0)
+            thirds = [...state.thirds, bill.form.third]
+            items = [...state.items, bill.items]
+          } else {
+            const thirdService = new ThirdService()
+            const itemService = new ItemService()
+            const thirdsRes = await thirdService.getThirds(userContext.token || '')
+            const itemsRes = await itemService.getItems(userContext.token || '')
+            thirds = thirdsRes.thirds
+            items = itemsRes
+          }
+
+          setState({
+            ...state,
+            form: bill.form,
+            thirds,
+            items,
+            selectedItems: bill.items,
+            loading: false,
+            disabledForm: !copy,
+            preview: billPlemsi
+          })
+
+        } else {
+          // Load service
+          const thirdService = new ThirdService()
+          const itemService = new ItemService()
+          const thirds = await thirdService.getThirds(userContext.token || '')
+          const items = await itemService.getItems(userContext.token || '')
+          setState({
+            ...state,
+            thirds: thirds.thirds,
+            items: items
+          })
+        }
+      } catch (error) {
+
+        setState({
+          ...state,
+          loading: false
+        })
+
+        if (axios.isAxiosError(error)) {
+          const serverError = error as AxiosError<ServerError>
+          if (serverError && serverError.response) {
+            return toast.error(serverError.response.data.message || error.toString())
+          }
+        }
+      }
     }
+
     loadData()
   }, [])
 
@@ -337,7 +418,8 @@ export default function ElectronicBillForm() {
     })
 
     try {
-      const res = electronicBillMapper(state.form, state.selectedItems)
+      console.log(state.selectedItems)
+      const res = ElectronicBillMapper.formToSchema(state.form, state.selectedItems)
       const electronicBillService = new ElectronicBillService()
       const plemsiService = new PlemsiService()
       const bill = await electronicBillService.saveBill(res, userContext.token ?? '')
@@ -353,10 +435,16 @@ export default function ElectronicBillForm() {
       })
       return toast.success(`Factura creada con éxito`)
     } catch (error) {
+
+      setState({
+        ...state,
+        loading: false
+      })
+      
       if (axios.isAxiosError(error)) {
         const serverError = error as AxiosError<ServerError>
         if (serverError && serverError.response) {
-          return toast.error(serverError.response.data.message)
+          return toast.error(serverError.response.data.message || error.toString())
         }
       }
     }
@@ -386,7 +474,7 @@ export default function ElectronicBillForm() {
           },
           currentPrice: 0,
           currentQuantity: 0,
-          selectedTax: { code: '', description: ''},
+          selectedTax: { code: '', description: '' },
           currentPercentTax: 0
         },
         applyTaxes: false,
@@ -425,10 +513,13 @@ export default function ElectronicBillForm() {
   }
 
   const onPreviewBill = () => {
-    setState({
-      ...state,
-      preview: undefined
-    })
+    // if the form is in view mode, it is not necessary to clear the preview
+    if (!state.disabledForm) {
+      setState({
+        ...state,
+        preview: undefined
+      })
+    }
   }
 
   return (
@@ -463,6 +554,7 @@ export default function ElectronicBillForm() {
               onChange={handleChange}
               helperText={texts.body.field.date.helperText}
               placeholder={texts.body.field.date.placeholder}
+              disabled={state.disabledForm}
             />
           </Grid>
 
@@ -477,6 +569,7 @@ export default function ElectronicBillForm() {
               onChange={handleChange}
               helperText={texts.body.field.orderReference.helperText}
               placeholder={texts.body.field.orderReference.placeholder}
+              disabled={state.disabledForm}
             />
           </Grid>
 
@@ -487,15 +580,16 @@ export default function ElectronicBillForm() {
               value={state.form.third?.document ?? ''}
               variant="outlined"
               fullWidth
+              disabled={state.disabledForm}
             >
               {
-                state.thirds.map((item) =>
+                state.thirds.map((third) =>
                   <MenuItem
-                    key={item.document}
-                    value={item.document}
-                    onClick={() => handleChangeSelect(texts.body.field.third.name, item)}
+                    key={third.document}
+                    value={third.document}
+                    onClick={() => handleChangeSelect(texts.body.field.third.name, third)}
                   >
-                    { item.name !== undefined ? `${item.name} ${item.lastname}` : `${item.businessName}`}
+                    {third.name !== undefined ? `${third.name} ${third.lastname}` : `${third.businessName}`}
                   </MenuItem>
                 )
               }
@@ -511,6 +605,7 @@ export default function ElectronicBillForm() {
               value={state.form.wayToPay.code}
               variant="outlined"
               fullWidth
+              disabled={state.disabledForm}
             >
               {
                 texts.body.field.wayToPay.options.map((item) =>
@@ -534,6 +629,7 @@ export default function ElectronicBillForm() {
               value={state.form.paymentMethod.code}
               variant="outlined"
               fullWidth
+              disabled={state.disabledForm}
             >
               {
                 texts.body.field.paymentMethod.options.map((item) =>
@@ -561,6 +657,7 @@ export default function ElectronicBillForm() {
               onChange={handleChange}
               helperText={texts.body.field.paymentDueDate.helperText}
               placeholder={texts.body.field.paymentDueDate.placeholder}
+              disabled={state.disabledForm}
             />
           </Grid>
 
@@ -576,6 +673,7 @@ export default function ElectronicBillForm() {
               onChange={handleChange}
               helperText={texts.body.field.note.helperText}
               placeholder={texts.body.field.note.placeholder}
+              disabled={state.disabledForm}
             />
           </Grid>
 
@@ -599,6 +697,7 @@ export default function ElectronicBillForm() {
               value={state.form.currentItem?.code ?? ''}
               variant="outlined"
               fullWidth
+              disabled={state.disabledForm}
             >
               {
                 state.items.map((item) =>
@@ -622,6 +721,7 @@ export default function ElectronicBillForm() {
               value={state.form.currentItemType.code}
               variant="outlined"
               fullWidth
+              disabled={state.disabledForm}
             >
               {
                 texts.body.field.itemType.options.map((item) =>
@@ -650,6 +750,7 @@ export default function ElectronicBillForm() {
               onChange={handleChange}
               helperText={texts.body.field.price.helperText}
               placeholder={texts.body.field.price.placeholder}
+              disabled={state.disabledForm}
             />
           </Grid>
 
@@ -665,6 +766,7 @@ export default function ElectronicBillForm() {
               onChange={handleChange}
               helperText={texts.body.field.quantity.helperText}
               placeholder={texts.body.field.quantity.placeholder}
+              disabled={state.disabledForm}
             />
           </Grid>
 
@@ -673,6 +775,7 @@ export default function ElectronicBillForm() {
             <FormControlLabel
               control={<Checkbox checked={state.applyTaxes} name={texts.body.field.applyTaxes.name} value={state.applyTaxes} onChange={(e) => onApplyTaxes(e)} color="primary" />}
               label={texts.body.field.applyTaxes.helperText}
+              disabled={state.disabledForm}
             />
           </Grid>
 
@@ -737,6 +840,7 @@ export default function ElectronicBillForm() {
               onClick={() => handleTable("ADD")}
               className={classes.addButton}
               startIcon={<Save />}
+              disabled={state.disabledForm}
             >
               {texts.body.buttons.addProduct.title}
             </Button>
@@ -744,7 +848,7 @@ export default function ElectronicBillForm() {
 
           {/* ----- Form: item **concepts table rendering ------*/}
           <Grid item md={12} sm={12} xs={12}>
-            <ItemTable rows={state.selectedItems} handleTable={handleTable} />
+            <ItemTable rows={state.selectedItems} handleTable={handleTable} disabledForm={state.disabledForm} />
           </Grid>
 
           {/* ----- Form: total ------*/}
@@ -791,42 +895,46 @@ export default function ElectronicBillForm() {
               placeholder={texts.body.field.totalToPay.placeholder}
             />
           </Grid>
-
-          <Grid item md={12} sm={6} xs={12} className={classes.alignRight}>
-            <IconButton
-              type="submit"
-            >
-              <NoteAdd fontSize={"large"} color="primary" />
-            </IconButton>
-
-            <IconButton
-              type="button"
-              onClick={cancel}
-            >
-              <Cancel fontSize={"large"} color="secondary" />
-            </IconButton>
-          </Grid>
           {
-            state.preview !== undefined ?
+            !state.disabledForm ?
             (
-              <Grid item md={12} sm={12} xs={12} className={classes.alignRight}>
-                    <Link to={{ pathname: state.preview }} target='_blank' onClick={onPreviewBill}>
-                      Descargue su factura
-                    </Link>
+              <Grid item md={12} sm={6} xs={12} className={classes.alignRight}>
+                <IconButton
+                  type="submit"
+                >
+                  <NoteAdd fontSize={"large"} color="primary" />
+                </IconButton>
+
+                <IconButton
+                  type="button"
+                  onClick={cancel}
+                >
+                  <Cancel fontSize={"large"} color="secondary" />
+                </IconButton>
               </Grid>
             ) : ''
+          }
+          {
+            state.preview !== undefined ?
+              (
+                <Grid item md={12} sm={12} xs={12} className={classes.alignRight}>
+                  <Link to={{ pathname: state.preview }} target='_blank' onClick={onPreviewBill}>
+                    Descargue su factura
+                  </Link>
+                </Grid>
+              ) : ''
           }
         </Grid>
       </form>
       {
         state.loading ?
-        (
-          <div className={classes.loadingContainer}>
-            <Box>
-              <CircularProgress/>
-            </Box>
-          </div>
-        ) : ''
+          (
+            <div className={classes.loadingContainer}>
+              <Box>
+                <CircularProgress />
+              </Box>
+            </div>
+          ) : ''
       }
     </div>
   )

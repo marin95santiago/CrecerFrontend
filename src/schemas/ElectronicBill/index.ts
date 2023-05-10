@@ -39,6 +39,8 @@ export interface ElectronicBill {
 }
 
 export interface ElectronicBillFormSchema {
+  number?: number
+  preview?: string
   date: string
   orderReference: string
   third?: Third

@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useState } from 'react'
 import { Entity } from '../../schemas/Entity/index'
+import Utils from '../../utils'
 
 const Context = createContext({})
 
@@ -24,7 +25,8 @@ const initialState: Entity = {
 }
 
 export function EntityContextProvider({ children }: Props) {
-  const [entityContext, setEntityContext] = useState<Entity>(initialState)
+  const auth = Utils.getEntityByCookieAuth()
+  const [entityContext, setEntityContext] = useState<Entity>(auth ?? initialState)
   return (
     <Context.Provider value={{ entityContext, setEntityContext }}>
       {children}

@@ -18,7 +18,9 @@ import {
   ExpandLess,
   ExpandMore,
   ContactMail,
-  QueueRounded
+  QueueRounded,
+  RecentActors,
+  Description
 } from '@material-ui/icons'
 import { Collapse, Typography } from '@material-ui/core'
 import permissions from '../../../permissions.json'
@@ -119,7 +121,14 @@ const initState = {
               url: urls.app.main.third.form
             },
             {
-              id: '001-01',
+              id: '001-02',
+              title: 'Listar terceros',
+              icon: <RecentActors/>,
+              permission: permissions.third.view,
+              url: urls.app.main.third.list
+            },
+            {
+              id: '001-03',
               title: 'Migración de terceros',
               icon: <ContactMail />,
               permission: permissions.third.migrate,
@@ -152,9 +161,27 @@ const initState = {
       {
         id: '006',
         title: 'Factura electrónica',
-        icon: <QueueRounded/>,
+        icon: <Description/>,
         permission: permissions.electronic_bill.view,
-        url: urls.app.main.electronicBill.form
+        indexedMenu: {
+          open: false,
+          items: [
+            {
+              id: '006-01',
+              title: 'Crear factura electrónica',
+              icon: <Description/>,
+              permission: permissions.electronic_bill.view,
+              url: urls.app.main.electronicBill.form
+            },
+            {
+              id: '006-02',
+              title: 'Listar factura electrónica',
+              icon: <Description/>,
+              permission: permissions.electronic_bill.view,
+              url: urls.app.main.electronicBill.list
+            }
+          ]
+        }
       },
       {
         id: '007',

@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import {
+  Box,
+  CircularProgress,
   Divider,
   FormHelperText,
   Grid,
@@ -15,11 +18,13 @@ import {
 import { Cancel, NoteAdd } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
+import EntityContext from '../../../contexts/Entity'
 import { UserContextType } from '../../../schemas/User'
 import { Third } from '../../../schemas/Third'
 import ThirdService from '../../../services/Third'
-import EntityService from '../../../services/Entity'
 import PlemsiService from '../../../services/Plemsi'
+import Utils from '../../../utils'
+import { EntityContextType } from '../../../schemas/Entity'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -41,6 +46,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   thirdClassTitle: {
     color: '#757575',
     marginBottom: '6vh'
+  },
+  loadingContainer: {
+    position: 'fixed',
+    width: '100%',
+    height: '100%',
+    bottom: '0',
+    right: '0',
+    background: '#BFBFBFBF',
+    opacity: 0.6,
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '50vh'
   }
 }))
 
@@ -97,7 +114,10 @@ const texts = {
       },
       document: {
         name: 'document',
-        helperText: 'Escriba el número de documento',
+        helperText: {
+          main: 'Escriba el número de documento',
+          error: 'El documento ingresado no tiene el formato correcto'
+        },
         placeholder: 'Documento'
       },
       dv: {
@@ -128,7 +148,10 @@ const texts = {
       },
       email: {
         name: 'email',
-        helperText: 'Escriba el email',
+        helperText: {
+          main: 'Escriba el email',
+          error: 'El correo ingresado no tiene el formato correcto'
+        },
         placeholder: 'Email'
       },
       phone: {
@@ -152,7 +175,11 @@ const texts = {
 // ------------ Init state -----------
 interface State {
   form: Third
+  errorOnMail: boolean
+  errorOnDocument: boolean
   cities: any[]
+  loading: boolean
+  isEdit: boolean
 }
 
 const initState: State = {
@@ -183,28 +210,53 @@ const initState: State = {
     city: undefined,
     email: ''
   },
-  cities: []
+  errorOnMail: false,
+  errorOnDocument: false,
+  cities: [],
+  loading: true,
+  isEdit: false
 }
 
 export default function ThirdForm() {
 
   const classes = useStyles()
+  const { search } = useLocation()
 
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
 
+  const { entityContext } = React.useContext(
+    EntityContext
+  ) as EntityContextType
+
   React.useEffect(() => {
     async function loadData() {
-      const entityService = new EntityService()
+      const document = Utils.getDocumentFromUrl(search)
+
       const plemsiService = new PlemsiService()
-      const entity = await entityService.getEntity(userContext.token ?? '', userContext.entityId ?? '')
-      const cities = await plemsiService.getCities(entity.apiKeyPlemsi ?? '')
-      setState({
-        ...state,
-        cities
-      })
+      const cities = await plemsiService.getCities(entityContext.apiKeyPlemsi ?? '')
+
+      if (document) {
+        const thirdService = new ThirdService()
+        const third = await thirdService.getThirdByDocument(userContext.token ?? '', document)
+        if (third) {
+          setState({
+            ...state,
+            form: third,
+            cities,
+            loading: false,
+            isEdit: true
+          })
+        }
+      } else {
+        setState({
+          ...state,
+          cities,
+          loading: false
+        })
+      }
     }
     loadData()
   }, [])
@@ -226,12 +278,29 @@ export default function ThirdForm() {
   // of the state, while the user writes on an input.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
+
+    // Validaciones
+    let errorOnDocument = state.errorOnDocument
+    let errorOnMail = state.errorOnMail
+
+    if (name === 'document') {
+      const regex = /^[0-9]+$/
+      errorOnDocument = !regex.test(value)
+    }
+
+    if (name === 'email') {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      errorOnMail = !regex.test(value)
+    }
+
     setState({
       ...state,
       form: {
         ...state.form,
-        [name]: value
-      }
+        [name]: value,
+      },
+      errorOnMail: errorOnMail,
+      errorOnDocument: errorOnDocument
     })
   }
 
@@ -239,12 +308,29 @@ export default function ThirdForm() {
   // the state to redux (redux send the info to backend)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+  
+    // validaciones
+    if (state.errorOnDocument) {
+      return toast.error('Documento con formato incorrecto')
+    }
+
+    if (state.errorOnMail) {
+      return toast.error('Mail con formato incorrecto')
+    }
+
     try {
       const thirdService = new ThirdService()
-      const thirdCreated = await thirdService.saveThird(state.form, userContext.token ?? '')
+      let thirdCreated: any = {}
+
+      if (state.isEdit) {
+        thirdCreated = await thirdService.updateThird(state.form, userContext.token ?? '')
+      } else {
+        thirdCreated = await thirdService.saveThird(state.form, userContext.token ?? '')
+      }
       setState({
         ...initState,
-        cities: state.cities
+        cities: state.cities,
+        loading: false
       })
       return toast.success(`El tercero ${thirdCreated.document} fue creado con éxito`)
     } catch (error) {
@@ -289,6 +375,7 @@ export default function ThirdForm() {
               value={state.form.organizationType.code}
               variant="outlined"
               fullWidth
+              disabled={state.isEdit}
             >
               {
                 texts.body.field.organizationType.options.map((item) =>
@@ -349,8 +436,10 @@ export default function ThirdForm() {
               variant='outlined'
               fullWidth
               onChange={handleChange}
-              helperText={texts.body.field.document.helperText}
+              helperText={state.errorOnDocument ? texts.body.field.document.helperText.error : texts.body.field.document.helperText.main}
               placeholder={texts.body.field.document.placeholder}
+              disabled={state.isEdit}
+              error={state.errorOnDocument}
             />
           </Grid>
           {
@@ -476,8 +565,9 @@ export default function ThirdForm() {
               variant='outlined'
               fullWidth
               onChange={handleChange}
-              helperText={texts.body.field.email.helperText}
+              helperText={state.errorOnMail ? texts.body.field.email.helperText.error : texts.body.field.email.helperText.main}
               placeholder={texts.body.field.email.placeholder}
+              error={state.errorOnMail}
             />
           </Grid>
 
@@ -547,6 +637,16 @@ export default function ThirdForm() {
 
         </Grid>
       </form>
+      {
+        state.loading ?
+        (
+          <div className={classes.loadingContainer}>
+            <Box>
+              <CircularProgress/>
+            </Box>
+          </div>
+        ) : ''
+      }
     </div>
   )
 }
