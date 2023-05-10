@@ -10,13 +10,15 @@ export const urls = {
         third: {
           form: '/app/third/form',
           thirdMigrationForm: '/app/third/migration/form',
+          list: '/app/third/list'
         },
         cashReceipt: {
           form: '/app/cash-receipt/form',
           report: '/app/cash-receipt/report'
         },
         electronicBill: {
-          form: '/app/electronic-bill/form'
+          form: '/app/electronic-bill/form',
+          list: '/app/electronic-bill/list'
         },
         internalTransaction: {
           form: '/app/internal-transaction/form',

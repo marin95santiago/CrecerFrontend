@@ -28,7 +28,7 @@ const texts = {
     }
   }
 }
-export default function ItemTable({ rows, handleTable }: { rows: Array<any>, handleTable: Function }) {
+export default function ItemTable({ rows, handleTable, disabledForm }: { rows: Array<any>, handleTable: Function, disabledForm: boolean }) {
 
   const classes = useStyles();
   const [reload, setReload] = useState(false);
@@ -61,6 +61,7 @@ export default function ItemTable({ rows, handleTable }: { rows: Array<any>, han
                   <IconButton
                     aria-label="delete"
                     onClick={() => handleTable('REMOVE', row)}
+                    disabled={disabledForm}
                   >
                     <DeleteIcon />
                   </IconButton>

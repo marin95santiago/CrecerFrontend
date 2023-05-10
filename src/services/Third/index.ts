@@ -16,20 +16,58 @@ class ThirdService {
     }
   }
 
-  async getThirds(token: string) : Promise<Third[]> {
+  async updateThird(thirdData: Third, token: string) {
     try {
-      const responseApi = await axios.get('/api/v2/third', {
+      const responseApi = await axios.put('/api/v2/third', thirdData, {
         headers: {
           authorization: `Bearer ${token}`
         }
       })
+      return responseApi.data
+    } catch (error) {
+      throw error
+    }
+  }
 
-      const thirds = responseApi.data.map((third:any) => {
+  async getThirds(token: string, params?: { limit: number, lastEvaluatedKey?: string }) : Promise<{ lastEvaluatedKey: string, thirds: Third[] }> {
+    try {
+      let url = params !== undefined ? `/api/v2/third?limit=${params.limit}` : '/api/v2/third'
+      
+      if (params !== undefined && params.lastEvaluatedKey !== undefined) url = `${url}&lastEvaluatedKey=${params.lastEvaluatedKey}`
+  
+      const responseApi = await axios.get(url, {
+        headers: {
+          authorization: `Bearer ${token}`
+        } 
+      })
+
+      const thirds = responseApi.data.thirds.map((third:any) => {
         return thirdMapper(third) 
       })
 
-      return thirds
+      return {
+        lastEvaluatedKey: JSON.stringify(responseApi.data.lastEvaluatedKey),
+        thirds: thirds
+      }
 
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getThirdByDocument(token: string, document: string) : Promise<Third> {
+    try {
+      let url = `/api/v2/third/${document}`
+  
+      const responseApi = await axios.get(url, {
+        headers: {
+          authorization: `Bearer ${token}`
+        } 
+      })
+
+      const third = thirdMapper(responseApi.data) 
+
+      return third
     } catch (error) {
       throw error
     }
