@@ -16,9 +16,10 @@ import {
   FormControlLabel,
   Checkbox,
   Box,
-  CircularProgress
+  CircularProgress,
+  InputAdornment
 } from '@material-ui/core'
-import { Cancel, NoteAdd, Save } from '@material-ui/icons'
+import { Cancel, NoteAdd, Save, ArrowDropDown, ArrowDropUp } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import EntityContext from '../../../contexts/Entity'
@@ -220,6 +221,9 @@ interface State {
   preview?: string
   loading: boolean
   disabledForm: boolean
+  status: boolean
+  thirdSelected?: string
+  suggestionsThirds: any[]
 }
 
 const initState: State = {
@@ -250,7 +254,9 @@ const initState: State = {
   thirds: [],
   preview: undefined,
   loading: false,
-  disabledForm: false
+  disabledForm: false,
+  status: false,
+  suggestionsThirds: []
 }
 
 export default function ElectronicBillForm() {
@@ -315,7 +321,9 @@ export default function ElectronicBillForm() {
           setState({
             ...state,
             form: bill.form,
+            thirdSelected: bill.form.third?.name !== undefined ? `${bill.form.third?.name} ${bill.form.third?.lastname}` : `${bill.form.third?.businessName}`,
             thirds,
+            suggestionsThirds: thirds,
             items,
             selectedItems: bill.items,
             loading: false,
@@ -332,6 +340,7 @@ export default function ElectronicBillForm() {
           setState({
             ...state,
             thirds: thirds.thirds,
+            suggestionsThirds: thirds.thirds,
             items: items
           })
         }
@@ -367,7 +376,17 @@ export default function ElectronicBillForm() {
   // HandleChangeSelect is the handler to update the state
   // of the state, while the user change the options 
   // on an input select.
-  const handleChangeSelect = (name: string, item: { code: string, description: string, price?: number, itemType?: any }) => {
+  const handleChangeSelect = (
+      name: string,
+      item: {
+        code: string,
+        description: string,
+        price?: number,
+        itemType?: any,
+        name?: string,
+        lastname?: string,
+        businessName?: string
+      }) => {
     if (item.price && item.itemType) {
       setState({
         ...state,
@@ -380,6 +399,16 @@ export default function ElectronicBillForm() {
             description: item.itemType.description
           }
         }
+      })
+    } else if (name === texts.body.field.third.name) {
+      setState({
+        ...state,
+        form: {
+          ...state.form,
+          [name]: item
+        },
+        thirdSelected: item.name !== undefined ? `${item.name} ${item.lastname}` : `${item.businessName}`,
+        status: false
       })
     } else {
       setState({
@@ -405,6 +434,27 @@ export default function ElectronicBillForm() {
         ...state.form,
         [name]: value
       }
+    })
+  }
+
+  const handleSuggestions = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+
+    const suggestionsThirds = state.thirds.filter(third => {
+      if (third.name?.toLowerCase().includes(value.toLowerCase())) {
+        return third
+      } else if (third.lastname?.toLowerCase().includes(value.toLowerCase())) {
+        return third
+      } else if (third.businessName?.toLowerCase().includes(value.toLowerCase())) {
+        return third
+      }
+    })
+
+    setState({
+      ...state,
+      thirdSelected: value,
+      suggestionsThirds,
+      status: value.length > 0 ? true : false
     })
   }
 
@@ -575,25 +625,52 @@ export default function ElectronicBillForm() {
 
           {/* ----- Form: third ------*/}
           <Grid item md={12} sm={12} xs={12}>
-            <Select
-              name={texts.body.field.third.name}
-              value={state.form.third?.document ?? ''}
+            <TextField 
+              name="thirdSelected"
+              value={state.thirdSelected}
               variant="outlined"
               fullWidth
               disabled={state.disabledForm}
-            >
-              {
-                state.thirds.map((third) =>
-                  <MenuItem
-                    key={third.document}
-                    value={third.document}
-                    onClick={() => handleChangeSelect(texts.body.field.third.name, third)}
-                  >
-                    {third.name !== undefined ? `${third.name} ${third.lastname}` : `${third.businessName}`}
-                  </MenuItem>
-                )
-              }
-            </Select>
+              onChange={handleSuggestions}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">
+                  <IconButton onClick={() => setState({...state, status: !state.status})}>
+                    {
+                      state.status ? 
+                      (
+                        <ArrowDropUp fontSize={"small"} color="secondary" />
+                      ) :
+                      (
+                        <ArrowDropDown fontSize={"small"} color="primary" />
+                      )
+                    }
+                  </IconButton>
+                </InputAdornment>,
+              }}
+            />
+            {
+              state.status === true && (
+                <Box sx={{
+                  width: '100%',
+                  maxHeight: 100,
+                  display: 'relative',
+                  zIndex: 1,
+                  bgcolor: '#E1E1E1',
+                  overflow: 'auto'
+                }}>
+                  {
+                    state.suggestionsThirds.map((third) =>
+                      <MenuItem
+                        key={third.document}
+                        onClick={() => handleChangeSelect(texts.body.field.third.name, third)}
+                      >
+                        {third.name !== undefined ? `${third.name} ${third.lastname}` : `${third.businessName}`}
+                      </MenuItem>
+                    )
+                  }
+                </Box>
+              )
+            }
             <FormHelperText>{texts.body.field.third.helperText}</FormHelperText>
           </Grid>
 

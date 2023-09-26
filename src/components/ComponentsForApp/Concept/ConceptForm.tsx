@@ -16,9 +16,8 @@ import { Cancel, NoteAdd } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
-import { Item } from '../../../schemas/Item'
-import ItemService from '../../../services/Item'
-import permissions from '../../../permissions.json'
+import { Concept } from '../../../schemas/Concept'
+import ConceptService from '../../../services/Concept'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -46,49 +45,27 @@ const useStyles = makeStyles((theme: Theme) => ({
 // - in this part all the component texts are housed
 const texts = {
   header: {
-    description: 'Crear productos'
+    description: 'Crear conceptos'
   },
   body: {
     field: {
-      code: {
-        name: 'code',
-        helperText: 'Escriba el código del producto',
-        placeholder: 'Código'
-      },
       account: {
         name: 'account',
-        helperText: 'Cuenta contable del producto',
-        placeholder: 'Cuenta'
+        helperText: 'Cuenta contable del concepto',
+        placeholder: 'Cuenta',
+        validationError: 'Debe ser de 8 dígitos'
       },
       description: {
         name: 'description',
-        helperText: 'Escriba la descripción del producto',
-        placeholder: 'Nombre de producto'
+        helperText: 'Escriba la descripción del concepto',
+        placeholder: 'Nombre de concepto'
       },
-      price: {
-        name: 'price',
-        helperText: 'Escriba el precio en pesos colombianos sin decimales',
-        placeholder: 'Precio'
-      },
-      unitMeasure: {
-        name: 'unitMeasure',
-        helperText: 'Escoja una unidad de medida',
+      type: {
+        name: 'type',
+        helperText: 'Tipo de concepto',
         options: [
-          { description: 'Unidad', code: '70' },
-          { description: 'Kilogramo', code: '40' },
-          { description: 'Galón', code: '686' },
-          { description: 'Metro cúbico', code: '594' },
-          { description: 'Metro cuadrado', code: '472' },
-        ]
-      },
-      itemType: {
-        name: 'itemType',
-        helperText: 'Tipo de producto',
-        options: [
-          { description: 'UNSPSC', code: '1' },
-          { description: 'GTIN', code: '2' },
-          { description: 'Partida Arancelarias', code: '3' },
-          { description: 'Estándar de adopción del contribuyente', code: '4' }
+          { description: 'Crédito', code: 'CREDIT' },
+          { description: 'Débito', code: 'DEBIT' },
         ]
       }
     }
@@ -97,21 +74,27 @@ const texts = {
 
 // ------------ Init state -----------
 interface State {
-  form: Item
+  form: Concept,
+  validations: {
+    errorMinLengthAccount: boolean
+  }
 }
 
 const initState: State = {
   form: {
-    code: '',
     account: 0,
     description: '',
-    price: undefined,
-    unitMeasure: undefined,
-    itemType: undefined
+    type: {
+      code: '',
+      description: ''
+    }
+  },
+  validations: {
+    errorMinLengthAccount: false
   }
 }
 
-export default function ItemForm() {
+export default function ConceptForm() {
 
   const classes = useStyles()
 
@@ -126,7 +109,7 @@ export default function ItemForm() {
   const handleChangeSelect = (name: string, item: { code: string, description: string }) => {
     setState({
       ...state,
-      form:{
+      form: {
         ...state.form,
         [name]: item
       }
@@ -137,11 +120,20 @@ export default function ItemForm() {
   // of the state, while the user writes on an input.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
+    let errorMinLengthAccount = state.validations.errorMinLengthAccount
+
+    if (name === 'account') {
+      errorMinLengthAccount = value.length < 8
+    }
+
     setState({
       ...state,
       form: {
         ...state.form,
         [name]: value
+      },
+      validations: {
+        errorMinLengthAccount
       }
     })
   }
@@ -151,16 +143,23 @@ export default function ItemForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const itemService = new ItemService()
-      const itemCreated = await itemService.saveItem(state.form, userContext.token ?? '')
+      // validations
+      if (state.validations.errorMinLengthAccount) {
+        throw new Error('La cuenta debe tener 8 dígitos')
+      }
+
+      const conceptService = new ConceptService()
+      const conceptCreated = await conceptService.saveConcept(state.form, userContext.token ?? '')
       setState(initState)
-      return toast.success(`El producto ${itemCreated.code} fue creado con éxito`)
+      return toast.success(`El concepto ${conceptCreated.account} fue creado con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverError = error as AxiosError<ServerError>
         if (serverError && serverError.response) {
           return toast.error(serverError.response.data.message)
         }
+      } else if (error instanceof Error) {
+        return toast.error(error.message)
       }
     }
 
@@ -175,7 +174,7 @@ export default function ItemForm() {
 
       {/* ----- Header -----*/}
       <React.Fragment>
-        <Typography 
+        <Typography
           variant='h5'
           className={classes.description}
         >
@@ -191,38 +190,21 @@ export default function ItemForm() {
       <form onSubmit={(e) => handleSubmit(e)}>
         <Grid container spacing={3}>
 
-          {/* ----- Form: code ------*/}
+          {/* ----- Form: account ------*/}
           <Grid item md={6} sm={6} xs={10}>
             <TextField
               required={true}
-              name={texts.body.field.code.name}
-              value={state.form.code}
+              name={texts.body.field.account.name}
+              value={state.form.account}
               variant='outlined'
               fullWidth
               onChange={handleChange}
-              helperText={texts.body.field.code.helperText}
-              placeholder={texts.body.field.code.placeholder}
+              helperText={ state.validations.errorMinLengthAccount ? texts.body.field.account.validationError : texts.body.field.account.helperText}
+              error={state.validations.errorMinLengthAccount}
+              placeholder={texts.body.field.account.placeholder}
+              inputProps={{ maxLength: 8 }}
             />
           </Grid>
-
-          {/* ----- Form: account, only the admin can create this field ------*/}
-          {
-            userContext.permissions.find(permission => permission === permissions.super_admin) ?
-            (
-              <Grid item md={6} sm={6} xs={10}>
-                <TextField
-                  required={true}
-                  name={texts.body.field.account.name}
-                  value={state.form.account}
-                  variant='outlined'
-                  fullWidth
-                  onChange={handleChange}
-                  helperText={texts.body.field.account.helperText}
-                  placeholder={texts.body.field.account.placeholder}
-                />
-              </Grid>
-            ) : ''
-          }
 
           {/* ----- Form: description ------*/}
           <Grid item md={6} sm={6} xs={10}>
@@ -238,64 +220,27 @@ export default function ItemForm() {
             />
           </Grid>
 
-          {/* ----- Form: price ------*/}
-          <Grid item md={6} sm={6} xs={10}>
-            <TextField
-              name={texts.body.field.price.name}
-              value={state.form.price ?? ''}
-              type='number'
-              variant='outlined'
-              fullWidth
-              onChange={handleChange}
-              helperText={texts.body.field.price.helperText}
-              placeholder={texts.body.field.price.placeholder}
-            />
-          </Grid>
-
-          {/* ----- Form: unit measure ------*/}
+          {/* ----- Form: type ------*/}
           <Grid item md={6} sm={6} xs={12}>
             <Select
-              name={texts.body.field.unitMeasure.name}
-              value={state.form.unitMeasure?.code ?? ''}
+              name={texts.body.field.type.name}
+              value={state.form.type?.code ?? ''}
               variant="outlined"
               fullWidth
             >
               {
-                texts.body.field.unitMeasure.options.map((item) =>
+                texts.body.field.type.options.map((item) =>
                   <MenuItem
                     key={item.description}
                     value={item.code}
-                    onClick={() => handleChangeSelect(texts.body.field.unitMeasure.name, item)}
+                    onClick={() => handleChangeSelect(texts.body.field.type.name, item)}
                   >
                     {item.description}
                   </MenuItem>
                 )
               }
             </Select>
-            <FormHelperText>{texts.body.field.unitMeasure.helperText}</FormHelperText>
-          </Grid>
-
-          {/* ----- Form: item type ------*/}
-          <Grid item md={6} sm={6} xs={12}>
-            <Select
-              name={texts.body.field.itemType.name}
-              value={state.form.itemType?.code ?? ''}
-              variant="outlined"
-              fullWidth
-            >
-              {
-                texts.body.field.itemType.options.map((item) =>
-                  <MenuItem
-                    key={item.description}
-                    value={item.code}
-                    onClick={() => handleChangeSelect(texts.body.field.itemType.name, item)}
-                  >
-                    {item.description}
-                  </MenuItem>
-                )
-              }
-            </Select>
-            <FormHelperText>{texts.body.field.itemType.helperText}</FormHelperText>
+            <FormHelperText>{texts.body.field.type.helperText}</FormHelperText>
           </Grid>
 
           <Grid item md={12} sm={6} xs={12} className={classes.alignRight}>

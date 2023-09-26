@@ -12,6 +12,9 @@ export const urls = {
           thirdMigrationForm: '/app/third/migration/form',
           list: '/app/third/list'
         },
+        concept: {
+          form: '/app/concept/form'
+        },
         cashReceipt: {
           form: '/app/cash-receipt/form',
           report: '/app/cash-receipt/report'
