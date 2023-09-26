@@ -1,4 +1,5 @@
 {
+  "super_admin": "super_admin",
   "home": {
     "view": "home_view"
   },
@@ -30,5 +31,10 @@
   "electronic_bill": {
     "view": "electronic_bill_view",
     "create": "electronic_bill_create"
+  },
+  "concept":{
+    "view": "concept_view",
+    "create": "concept_create",
+    "update": "concept_update"
   }
 }

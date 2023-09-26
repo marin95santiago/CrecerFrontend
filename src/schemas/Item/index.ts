@@ -1,6 +1,7 @@
 export interface Item {
   entityId?: string
   code: string
+  account: number
   description: string
   price?: number
   unitMeasure?: {
