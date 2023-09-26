@@ -139,27 +139,34 @@ const initState = {
       },
       {
         id: '003',
+        title: 'Conceptos',
+        icon: <QueueRounded/>,
+        permission: permissions.concept.view,
+        url: urls.app.main.concept.form
+      },
+      {
+        id: '004',
         title: 'Recibos de ingreso / egreso',
         icon: <Keyboard />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.cashReceipt.form
       },
       {
-        id: '004',
+        id: '005',
         title: 'Transacciones internas',
         icon: <ImportExport />,
         permission: permissions.movement_internal.view,
         url: urls.app.main.internalTransaction.form
       },
       {
-        id: '005',
+        id: '006',
         title: 'Productos',
         icon: <QueueRounded/>,
         permission: permissions.item.view,
         url: urls.app.main.item.form
       },
       {
-        id: '006',
+        id: '007',
         title: 'Factura electrónica',
         icon: <Description/>,
         permission: permissions.electronic_bill.view,
@@ -167,14 +174,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '006-01',
+              id: '007-01',
               title: 'Crear factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
               url: urls.app.main.electronicBill.form
             },
             {
-              id: '006-02',
+              id: '007-02',
               title: 'Listar factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
@@ -184,14 +191,14 @@ const initState = {
         }
       },
       {
-        id: '007',
+        id: '008',
         title: 'Reporte de recibos',
         icon: <FindInPage />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.cashReceipt.report
       },
       {
-        id: '008',
+        id: '009',
         title: 'Reporte de transacciones',
         icon: <Assignment />,
         permission: permissions.movement_internal.view,

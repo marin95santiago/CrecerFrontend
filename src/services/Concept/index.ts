@@ -1,12 +1,12 @@
 import axios from 'axios'
-import itemMapper from '../../mappers/Item/item.mapper'
-import { Item } from '../../schemas/Item'
+// import conceptMapper from '../../mappers/Concept/concept.mapper'
+import { Concept } from '../../schemas/Concept'
 
-class ItemService {
-  async saveItem(itemData: Item, token: string) {
+class ConceptService {
+  async saveConcept(concept: Concept, token: string) {
     try {
-      const url = `${process.env.REACT_APP_API}/api/v2/item` 
-      const responseApi = await axios.post(url, itemData, {
+      const url = `${process.env.REACT_APP_API}/api/v2/concept` 
+      const responseApi = await axios.post(url, concept, {
         headers: {
           authorization: `Bearer ${token}`
         }
@@ -16,7 +16,7 @@ class ItemService {
       throw error
     }
   }
-
+  /*
   async getItems(token: string) : Promise<Item[]> {
     try {
       const url = `${process.env.REACT_APP_API}/api/v2/item` 
@@ -35,7 +35,7 @@ class ItemService {
     } catch (error) {
       throw error
     }
-  }
+  */
 }
 
-export default ItemService
+export default ConceptService

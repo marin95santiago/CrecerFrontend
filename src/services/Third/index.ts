@@ -5,7 +5,8 @@ import { Third } from '../../schemas/Third'
 class ThirdService {
   async saveThird(thirdData: Third, token: string) {
     try {
-      const responseApi = await axios.post('/api/v2/third', thirdData, {
+      const url = `${process.env.REACT_APP_API}/api/v2/third` 
+      const responseApi = await axios.post(url, thirdData, {
         headers: {
           authorization: `Bearer ${token}`
         }
@@ -18,7 +19,8 @@ class ThirdService {
 
   async updateThird(thirdData: Third, token: string) {
     try {
-      const responseApi = await axios.put('/api/v2/third', thirdData, {
+      const url = `${process.env.REACT_APP_API}/api/v2/third` 
+      const responseApi = await axios.put(url, thirdData, {
         headers: {
           authorization: `Bearer ${token}`
         }
@@ -31,7 +33,7 @@ class ThirdService {
 
   async getThirds(token: string, params?: { limit: number, lastEvaluatedKey?: string }) : Promise<{ lastEvaluatedKey: string, thirds: Third[] }> {
     try {
-      let url = params !== undefined ? `/api/v2/third?limit=${params.limit}` : '/api/v2/third'
+      let url = params !== undefined ? `${process.env.REACT_APP_API}/api/v2/third?limit=${params.limit}` : `${process.env.REACT_APP_API}/api/v2/third`
       
       if (params !== undefined && params.lastEvaluatedKey !== undefined) url = `${url}&lastEvaluatedKey=${params.lastEvaluatedKey}`
   
@@ -57,7 +59,7 @@ class ThirdService {
 
   async getThirdByDocument(token: string, document: string) : Promise<Third> {
     try {
-      let url = `/api/v2/third/${document}`
+      let url = `${process.env.REACT_APP_API}/api/v2/third/${document}`
   
       const responseApi = await axios.get(url, {
         headers: {

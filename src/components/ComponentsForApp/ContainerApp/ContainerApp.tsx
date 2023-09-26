@@ -9,6 +9,7 @@ import { CssBaseline } from '@material-ui/core';
 import ThirdForm from '../Third/ThirdForm';
 import ThirdList from '../Third/ThirdList';
 import ThirdMigration from '../Third/ThirdMigration';
+import ConceptForm from '../Concept/ConceptForm';
 import InternalTransactionForm from '../InternalTransaction/InternalTransactionForm';
 import CashReceiptReport from '../CashReceipt/CashReceiptReport';
 import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport';
@@ -73,6 +74,11 @@ export default function ContainerApp() {
                         <Route path={urls.app.main.third.thirdMigrationForm}>
                             <ProtectRoute>
                                 <ThirdMigration />
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.concept.form}>
+                            <ProtectRoute>
+                                <ConceptForm />
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.item.form}>

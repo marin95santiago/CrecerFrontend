@@ -5,7 +5,8 @@ import ElectronicBillMapper from '../../mappers/ElectronicBill/electronicBill.ma
 class ElectronicBillService {
   async saveBill(billData: ElectronicBill, token: string) {
     try {
-      const responseApi = await axios.post('/api/v2/bill/electronic', billData, {
+      const url = `${process.env.REACT_APP_API}/api/v2/bill/electronic`
+      const responseApi = await axios.post(url, billData, {
         headers: {
           authorization: `Bearer ${token}`
         }
@@ -18,7 +19,7 @@ class ElectronicBillService {
 
   async getElectronicBills(token: string, params?: { limit: number, lastEvaluatedKey?: string }) : Promise<{ lastEvaluatedKey: string, electronicBills: ElectronicBillFormSchema[] }> {
     try {
-      let url = params !== undefined ? `/api/v2/bill/electronic?limit=${params.limit}` : '/api/v2/bill/electronic'
+      let url = params !== undefined ? `${process.env.REACT_APP_API}/api/v2/bill/electronic?limit=${params.limit}` : `${process.env.REACT_APP_API}/api/v2/bill/electronic`
       
       if (params !== undefined && params.lastEvaluatedKey !== undefined) url = `${url}&lastEvaluatedKey=${params.lastEvaluatedKey}`
   
@@ -45,7 +46,7 @@ class ElectronicBillService {
 
   async getBillByNumber(token: string, number: number) : Promise<{ form: ElectronicBillFormSchema, items: ItemComplete[], taxes: any[] }> {
     try {
-      let url = `/api/v2/bill/electronic/${number}`
+      let url = `${process.env.REACT_APP_API}/api/v2/bill/electronic/${number}`
   
       const responseApi = await axios.get(url, {
         headers: {

@@ -13,7 +13,8 @@ class UserService {
 
   async login(email: string, password: string) {
     try {
-      const responseApi = await axios.post('/api/v2/login', { email, password })
+      const url = `${process.env.REACT_APP_API}/api/v2/login`
+      const responseApi = await axios.post(url, { email, password })
       const response = responseApi.data
       if (!response.token) throw new Error('No recuperó token')
       const tokenData = jwt<jwtDecode>(response.token)
@@ -36,7 +37,8 @@ class UserService {
   async getUsers(token: string) {
 
     try {
-      const responseApi = await axios.get('/api/v2/user', {
+      const url = `${process.env.REACT_APP_API}/api/v2/user`
+      const responseApi = await axios.get(url, {
         headers: {
           authorization: token
         }
@@ -49,7 +51,8 @@ class UserService {
 
   async saveUser(userData: User, token: string) {
     try {
-      const responseApi = await axios.post('/api/v2/user', userData, {
+      const url = `${process.env.REACT_APP_API}/api/v2/user`
+      const responseApi = await axios.post(url, userData, {
         headers: {
           authorization: token
         }
