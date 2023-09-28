@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import {
@@ -33,6 +33,7 @@ import ThirdService from '../../../services/Third'
 import ElectronicBillMapper from '../../../mappers/ElectronicBill/electronicBill.mapper'
 import ItemService from '../../../services/Item'
 import PlemsiService from '../../../services/Plemsi'
+import { urls } from '../../../urls'
 
 // -------------- Styles ---------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -156,7 +157,7 @@ const texts = {
       },
       quantity: {
         name: 'currentQuantity',
-        helperText: 'Cantiadad',
+        helperText: 'Cantidad',
         placeholder: 'Cantidad'
       },
       applyTaxes: {
@@ -256,6 +257,7 @@ const initState: State = {
   loading: false,
   disabledForm: false,
   status: false,
+  thirdSelected: '',
   suggestionsThirds: []
 }
 
@@ -263,6 +265,7 @@ export default function ElectronicBillForm() {
 
   const classes = useStyles()
   const { search } = useLocation()
+  const history = useHistory()
 
   const [state, setState] = useState(initState)
   const { userContext } = React.useContext(
@@ -315,7 +318,7 @@ export default function ElectronicBillForm() {
             const thirdsRes = await thirdService.getThirds(userContext.token || '')
             const itemsRes = await itemService.getItems(userContext.token || '')
             thirds = thirdsRes.thirds
-            items = itemsRes
+            items = itemsRes.items
           }
 
           setState({
@@ -341,7 +344,7 @@ export default function ElectronicBillForm() {
             ...state,
             thirds: thirds.thirds,
             suggestionsThirds: thirds.thirds,
-            items: items
+            items: items.items
           })
         }
       } catch (error) {
@@ -483,6 +486,8 @@ export default function ElectronicBillForm() {
         preview: billPlemsi,
         loading: false
       })
+
+      history.push(urls.app.main.electronicBill.form)
       return toast.success(`Factura creada con éxito`)
     } catch (error) {
 
@@ -730,6 +735,7 @@ export default function ElectronicBillForm() {
               name={texts.body.field.paymentDueDate.name}
               value={state.form.paymentDueDate}
               variant='outlined'
+              type='date'
               fullWidth
               onChange={handleChange}
               helperText={texts.body.field.paymentDueDate.helperText}

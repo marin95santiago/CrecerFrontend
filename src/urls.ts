@@ -13,7 +13,8 @@ export const urls = {
           list: '/app/third/list'
         },
         concept: {
-          form: '/app/concept/form'
+          form: '/app/concept/form',
+          list: '/app/concept/list'
         },
         cashReceipt: {
           form: '/app/cash-receipt/form',
@@ -28,7 +29,8 @@ export const urls = {
           report: '/app/internal-transaction/report'
         },
         item: {
-          form: '/app/item/form'
+          form: '/app/item/form',
+          list: '/app/item/list'
         }
       }
     }

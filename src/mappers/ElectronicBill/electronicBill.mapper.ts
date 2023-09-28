@@ -1,3 +1,4 @@
+import moment from "moment";
 import { ElectronicBill, ElectronicBillFormSchema, ItemComplete } from "../../schemas/ElectronicBill";
 import Utils from "../../utils";
 
@@ -34,7 +35,7 @@ const electronicBillMapper = {
       },
       wayToPay: form.wayToPay,
       paymentMethod: form.paymentMethod,
-      paymentDueDate: form.paymentDueDate,
+      paymentDueDate: moment(form.paymentDueDate).format('YYYY/MM/DD'),
       note: form.note,
       items: items,
       taxes: Utils.buildTaxesForElectronicBill(items),
@@ -48,13 +49,13 @@ const electronicBillMapper = {
     return {
       form: {
         number: Number(bill.number),
-        date: bill.date,
+        date: moment(bill.date).format('YYYY-MM-DD'),
         preview: bill.preview,
         orderReference: bill.orderReference,
         third: bill.third,
         wayToPay: { code: bill.wayToPay.code, description: bill.wayToPay.description },
         paymentMethod: { code: bill.paymentMethod.code, description: bill.paymentMethod.description },
-        paymentDueDate: bill.paymentDueDate,
+        paymentDueDate: moment(bill.paymentDueDate).format('YYYY-MM-DD'),
         note: bill.note,
         total: bill.total,
         totalTaxes: bill.totalTaxes,
