@@ -73,14 +73,14 @@ const columns: GridColDef[] = [
   {
     field: 'document',
     headerName: 'Documento',
-    width: 250,
     editable: false,
+    flex: 1
   },
   {
     field: 'fullName',
     headerName: 'Nombre',
     editable: false,
-    width: 350,
+    flex: 2,
     valueGetter: (params: GridValueGetterParams) =>
       `${params.getValue(params.id, 'name') || params.getValue(params.id, 'businessName')} ${params.getValue(params.id, 'lastname') || ''
       }`,
@@ -88,19 +88,19 @@ const columns: GridColDef[] = [
   {
     field: 'email',
     headerName: 'Email',
-    width: 350,
+    flex: 1,
     editable: true,
   },
   {
     field: 'phone',
     headerName: 'Teléfono',
-    width: 250,
+    flex: 1,
     editable: true,
   },
   {
     field: 'actions',
     headerName: 'Acciones',
-    width: 150,
+    flex: 1,
     type: 'actions',
     renderCell: (params: any) => (
       <ActionButtons params={params} />
@@ -202,7 +202,7 @@ export default function ThirdList() {
       const thirdService = new ThirdService()
       const thirdUpdated = await thirdService.updateThird(thirdToEdit, userContext.token ?? '')
 
-      return toast.success(`El tercero ${thirdUpdated.document} fue creado con éxito`)
+      return toast.success(`El tercero ${thirdUpdated.document} fue editado con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverError = error as AxiosError<ServerError>

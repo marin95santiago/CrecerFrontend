@@ -10,10 +10,12 @@ import ThirdForm from '../Third/ThirdForm';
 import ThirdList from '../Third/ThirdList';
 import ThirdMigration from '../Third/ThirdMigration';
 import ConceptForm from '../Concept/ConceptForm';
+import ConceptList from '../Concept/ConceptList';
 import InternalTransactionForm from '../InternalTransaction/InternalTransactionForm';
 import CashReceiptReport from '../CashReceipt/CashReceiptReport';
 import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport';
 import ItemForm from '../Item/ItemForm';
+import ItemList from '../Item/ItemList';
 import ElectronicBillForm from '../ElectronicBill/ElectronicBillForm';
 import IndexApp from '../Index/IndexApp';
 import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute';
@@ -81,9 +83,19 @@ export default function ContainerApp() {
                                 <ConceptForm />
                             </ProtectRoute>
                         </Route>
+                        <Route path={urls.app.main.concept.list}>
+                            <ProtectRoute>
+                                <ConceptList />
+                            </ProtectRoute>
+                        </Route>
                         <Route path={urls.app.main.item.form}>
                             <ProtectRoute>
                                 <ItemForm/>
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.item.list}>
+                            <ProtectRoute>
+                                <ItemList/>
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.cashReceipt.form}>

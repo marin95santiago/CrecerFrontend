@@ -2,8 +2,9 @@ import { Item } from "../../schemas/Item";
 
 export default function itemMapper(item: any | unknown): Item {
   return {
+    entityId: item.entityId ?? '',
     code: item.code ?? '',
-    account: item.account ?? 0,
+    account: Number(item.account) ?? 0,
     description: item.description ?? '',
     price: item.price ?? undefined,
     unitMeasure: {
