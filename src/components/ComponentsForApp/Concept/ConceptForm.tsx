@@ -170,7 +170,7 @@ export default function ConceptForm() {
     let errorMinLengthAccount = state.validations.errorMinLengthAccount
 
     if (name === 'account') {
-      errorMinLengthAccount = value.length < 8
+      errorMinLengthAccount = value.length < Number(process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT)
     }
 
     setState({
@@ -192,7 +192,7 @@ export default function ConceptForm() {
     try {
       // validations
       if (state.validations.errorMinLengthAccount) {
-        throw new Error('La cuenta debe tener 8 dígitos')
+        throw new Error(`La cuenta debe tener ${process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT} dígitos`)
       }
 
       const conceptService = new ConceptService()

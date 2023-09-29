@@ -222,8 +222,8 @@ export default function ItemList() {
   const gridEdit = async (params: GridCellEditCommitParams) => {
     try {
       // validations
-      if (params.field === "account" && params.value && params.value.toString().length !== 8) {
-        throw new Error('El número de cuenta contable debe ser de 8 dígitos')
+      if (params.field === "account" && params.value && params.value.toString().length !== Number(process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT)) {
+        throw new Error(`El número de cuenta contable debe ser de ${process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT} dígitos`)
       }
       let itemToEdit: any = {}
 
