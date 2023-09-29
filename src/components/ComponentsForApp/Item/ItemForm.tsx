@@ -194,7 +194,7 @@ export default function ItemForm() {
     let errorMinLengthAccount = state.validations.errorMinLengthAccount
 
     if (name === 'account') {
-      errorMinLengthAccount = value.length < 8
+      errorMinLengthAccount = value.length < Number(process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT)
     }
     setState({
       ...state,
@@ -215,7 +215,7 @@ export default function ItemForm() {
     try {
       // validations
       if (state.validations.errorMinLengthAccount && userContext.permissions.some(p => p === permissions.super_admin)) {
-        throw new Error('La cuenta debe tener 8 dígitos')
+        throw new Error(`La cuenta debe tener ${process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT} dígitos`)
       }
 
       const itemService = new ItemService()

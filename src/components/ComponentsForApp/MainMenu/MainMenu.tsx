@@ -190,14 +190,14 @@ const initState = {
               id: '006-01',
               title: 'Creación de productos',
               icon: <QueueRounded />,
-              permission: permissions.concept.create,
+              permission: permissions.item.create,
               url: urls.app.main.item.form
             },
             {
               id: '006-02',
               title: 'Listar productos',
               icon: <ListIcon/>,
-              permission: permissions.concept.view,
+              permission: permissions.item.view,
               url: urls.app.main.item.list
             },
           ]
