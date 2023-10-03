@@ -3,6 +3,8 @@ import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import {
+  Box,
+  CircularProgress,
   Divider,
   FormHelperText,
   Grid,
@@ -18,6 +20,9 @@ import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
 import { Concept } from '../../../schemas/Concept'
 import ConceptService from '../../../services/Concept'
+import { useHistory, useLocation } from 'react-router-dom'
+import Utils from '../../../utils'
+import { urls } from '../../../urls'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -39,6 +44,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   thirdClassTitle: {
     color: '#757575',
     marginBottom: '6vh'
+  },
+  loadingContainer: {
+    position: 'fixed',
+    width: '100%',
+    height: '100%',
+    bottom: '0',
+    right: '0',
+    background: '#BFBFBFBF',
+    opacity: 0.6,
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '50vh'
   }
 }))
 
@@ -78,6 +95,8 @@ interface State {
   validations: {
     errorMinLengthAccount: boolean
   }
+  isEdit: boolean
+  loading: boolean
 }
 
 const initState: State = {
@@ -91,17 +110,45 @@ const initState: State = {
   },
   validations: {
     errorMinLengthAccount: false
-  }
+  },
+  isEdit: false,
+  loading: false
 }
 
 export default function ConceptForm() {
 
   const classes = useStyles()
+  const { search } = useLocation()
+  const history = useHistory()
 
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
+
+  React.useEffect(() => {
+    async function loadData() {
+      const account = Utils.getIdFromUrl(search)
+
+      if (account) {
+        setState({
+          ...state,
+          loading: true
+        })
+        const conceptService = new ConceptService()
+        const concept = await conceptService.getConceptByAccount(userContext.token ?? '', account)
+        if (concept) {
+          setState({
+            ...state,
+            form: concept,
+            loading: false,
+            isEdit: true
+          })
+        }
+      }
+    }
+    loadData()
+  }, [])
 
   // HandleChange is the handler to update the state
   // of the state, while the user change the options 
@@ -123,7 +170,7 @@ export default function ConceptForm() {
     let errorMinLengthAccount = state.validations.errorMinLengthAccount
 
     if (name === 'account') {
-      errorMinLengthAccount = value.length < 8
+      errorMinLengthAccount = value.length < Number(process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT)
     }
 
     setState({
@@ -145,13 +192,21 @@ export default function ConceptForm() {
     try {
       // validations
       if (state.validations.errorMinLengthAccount) {
-        throw new Error('La cuenta debe tener 8 dígitos')
+        throw new Error(`La cuenta debe tener ${process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT} dígitos`)
       }
 
       const conceptService = new ConceptService()
-      const conceptCreated = await conceptService.saveConcept(state.form, userContext.token ?? '')
+      let conceptCreated
+
+      if (state.isEdit) {
+        conceptCreated = await conceptService.updateConcept(state.form, userContext.token ?? '')
+      } else {
+        conceptCreated = await conceptService.saveConcept(state.form, userContext.token ?? '')
+      }
+
       setState(initState)
-      return toast.success(`El concepto ${conceptCreated.account} fue creado con éxito`)
+      history.push(urls.app.main.concept.form)
+      return toast.success(`El concepto ${conceptCreated.account} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverError = error as AxiosError<ServerError>
@@ -260,6 +315,16 @@ export default function ConceptForm() {
 
         </Grid>
       </form>
+      {
+        state.loading ?
+        (
+          <div className={classes.loadingContainer}>
+            <Box>
+              <CircularProgress/>
+            </Box>
+          </div>
+        ) : ''
+      }
     </div>
   )
 }

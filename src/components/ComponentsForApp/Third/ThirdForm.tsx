@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -25,6 +25,7 @@ import ThirdService from '../../../services/Third'
 import PlemsiService from '../../../services/Plemsi'
 import Utils from '../../../utils'
 import { EntityContextType } from '../../../schemas/Entity'
+import { urls } from '../../../urls'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -221,6 +222,7 @@ export default function ThirdForm() {
 
   const classes = useStyles()
   const { search } = useLocation()
+  const history = useHistory()
 
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
@@ -233,7 +235,7 @@ export default function ThirdForm() {
 
   React.useEffect(() => {
     async function loadData() {
-      const document = Utils.getDocumentFromUrl(search)
+      const document = Utils.getIdFromUrl(search)
 
       const plemsiService = new PlemsiService()
       const cities = await plemsiService.getCities(entityContext.apiKeyPlemsi ?? '')
@@ -332,7 +334,10 @@ export default function ThirdForm() {
         cities: state.cities,
         loading: false
       })
-      return toast.success(`El tercero ${thirdCreated.document} fue creado con éxito`)
+
+      history.push(urls.app.main.third.form)
+
+      return toast.success(`El tercero ${thirdCreated.document} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverError = error as AxiosError<ServerError>

@@ -20,7 +20,9 @@ import {
   ContactMail,
   QueueRounded,
   RecentActors,
-  Description
+  Description,
+  Category,
+  List as ListIcon
 } from '@material-ui/icons'
 import { Collapse, Typography } from '@material-ui/core'
 import permissions from '../../../permissions.json'
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     fixed: {
       minHeight: '100vh',
-      width: '320px',
+      width: '320px'
     },
     fixedResponsive: {
       minHeight: '100vh',
@@ -114,21 +116,21 @@ const initState = {
           open: false,
           items: [
             {
-              id: '001-01',
+              id: '002-01',
               title: 'Creación de terceros',
               icon: <ContactMail />,
               permission: permissions.third.create,
               url: urls.app.main.third.form
             },
             {
-              id: '001-02',
+              id: '002-02',
               title: 'Listar terceros',
               icon: <RecentActors/>,
               permission: permissions.third.view,
               url: urls.app.main.third.list
             },
             {
-              id: '001-03',
+              id: '002-03',
               title: 'Migración de terceros',
               icon: <ContactMail />,
               permission: permissions.third.migrate,
@@ -140,13 +142,31 @@ const initState = {
       {
         id: '003',
         title: 'Conceptos',
-        icon: <QueueRounded/>,
+        icon: <Category/>,
         permission: permissions.concept.view,
-        url: urls.app.main.concept.form
+        indexedMenu: {
+          open: false,
+          items: [
+            {
+              id: '003-01',
+              title: 'Creación de conceptos',
+              icon: <QueueRounded />,
+              permission: permissions.concept.create,
+              url: urls.app.main.concept.form
+            },
+            {
+              id: '003-02',
+              title: 'Listar conceptos',
+              icon: <ListIcon/>,
+              permission: permissions.concept.view,
+              url: urls.app.main.concept.list
+            },
+          ]
+        }
       },
       {
         id: '004',
-        title: 'Recibos de ingreso / egreso',
+        title: 'Recibos de caja',
         icon: <Keyboard />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.cashReceipt.form
@@ -163,7 +183,25 @@ const initState = {
         title: 'Productos',
         icon: <QueueRounded/>,
         permission: permissions.item.view,
-        url: urls.app.main.item.form
+        indexedMenu: {
+          open: false,
+          items: [
+            {
+              id: '006-01',
+              title: 'Creación de productos',
+              icon: <QueueRounded />,
+              permission: permissions.item.create,
+              url: urls.app.main.item.form
+            },
+            {
+              id: '006-02',
+              title: 'Listar productos',
+              icon: <ListIcon/>,
+              permission: permissions.item.view,
+              url: urls.app.main.item.list
+            },
+          ]
+        }
       },
       {
         id: '007',

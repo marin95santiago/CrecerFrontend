@@ -88,7 +88,7 @@ const Utils = {
     return res
   },
 
-  getDocumentFromUrl: (search: string) : string | undefined => {
+  getIdFromUrl: (search: string) : string | undefined => {
     if (search !== undefined) {
       const regex = /=\s*(\d+)/
       const match = search.match(regex)

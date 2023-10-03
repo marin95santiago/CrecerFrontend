@@ -3,6 +3,8 @@ import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import {
+  Box,
+  CircularProgress,
   Divider,
   FormHelperText,
   Grid,
@@ -19,6 +21,9 @@ import { UserContextType } from '../../../schemas/User'
 import { Item } from '../../../schemas/Item'
 import ItemService from '../../../services/Item'
 import permissions from '../../../permissions.json'
+import { useHistory, useLocation } from 'react-router-dom'
+import Utils from '../../../utils'
+import { urls } from '../../../urls'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -40,6 +45,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   thirdClassTitle: {
     color: '#757575',
     marginBottom: '6vh'
+  },
+  loadingContainer: {
+    position: 'fixed',
+    width: '100%',
+    height: '100%',
+    bottom: '0',
+    right: '0',
+    background: '#BFBFBFBF',
+    opacity: 0.6,
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '50vh'
   }
 }))
 
@@ -58,7 +75,8 @@ const texts = {
       account: {
         name: 'account',
         helperText: 'Cuenta contable del producto',
-        placeholder: 'Cuenta'
+        placeholder: 'Cuenta',
+        validationError: 'Debe ser de 8 dígitos'
       },
       description: {
         name: 'description',
@@ -98,6 +116,11 @@ const texts = {
 // ------------ Init state -----------
 interface State {
   form: Item
+  validations: {
+    errorMinLengthAccount: boolean
+  }
+  isEdit: boolean
+  loading: boolean
 }
 
 const initState: State = {
@@ -108,17 +131,48 @@ const initState: State = {
     price: undefined,
     unitMeasure: undefined,
     itemType: undefined
-  }
+  },
+  validations: {
+    errorMinLengthAccount: false
+  },
+  isEdit: false,
+  loading: false
 }
 
 export default function ItemForm() {
 
   const classes = useStyles()
+  const { search } = useLocation()
+  const history = useHistory()
 
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
+
+  React.useEffect(() => {
+    async function loadData() {
+      const account = Utils.getIdFromUrl(search)
+
+      if (account) {
+        setState({
+          ...state,
+          loading: true
+        })
+        const itemService = new ItemService()
+        const item = await itemService.getItemByCode(userContext.token ?? '', account)
+        if (item) {
+          setState({
+            ...state,
+            form: item,
+            loading: false,
+            isEdit: true
+          })
+        }
+      }
+    }
+    loadData()
+  }, [])
 
   // HandleChange is the handler to update the state
   // of the state, while the user change the options 
@@ -137,11 +191,19 @@ export default function ItemForm() {
   // of the state, while the user writes on an input.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
+    let errorMinLengthAccount = state.validations.errorMinLengthAccount
+
+    if (name === 'account') {
+      errorMinLengthAccount = value.length < Number(process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT)
+    }
     setState({
       ...state,
       form: {
         ...state.form,
         [name]: value
+      },
+      validations: {
+        errorMinLengthAccount
       }
     })
   }
@@ -151,16 +213,31 @@ export default function ItemForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
+      // validations
+      if (state.validations.errorMinLengthAccount && userContext.permissions.some(p => p === permissions.super_admin)) {
+        throw new Error(`La cuenta debe tener ${process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT} dígitos`)
+      }
+
       const itemService = new ItemService()
-      const itemCreated = await itemService.saveItem(state.form, userContext.token ?? '')
+      let itemCreated
+
+      if (state.isEdit) {
+        itemCreated = await itemService.updateItem(state.form, userContext.token ?? '')
+      } else {
+        itemCreated = await itemService.saveItem(state.form, userContext.token ?? '')
+      }
+
       setState(initState)
-      return toast.success(`El producto ${itemCreated.code} fue creado con éxito`)
+      history.push(urls.app.main.item.form)
+      return toast.success(`El producto ${itemCreated.code} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverError = error as AxiosError<ServerError>
         if (serverError && serverError.response) {
           return toast.error(serverError.response.data.message)
         }
+      } else if (error instanceof Error) {
+        return toast.error(error.message)
       }
     }
 
@@ -217,8 +294,10 @@ export default function ItemForm() {
                   variant='outlined'
                   fullWidth
                   onChange={handleChange}
-                  helperText={texts.body.field.account.helperText}
+                  helperText={ state.validations.errorMinLengthAccount ? texts.body.field.account.validationError : texts.body.field.account.helperText}
+                  error={state.validations.errorMinLengthAccount}
                   placeholder={texts.body.field.account.placeholder}
+                  inputProps={{ maxLength: 8 }}
                 />
               </Grid>
             ) : ''
@@ -315,6 +394,16 @@ export default function ItemForm() {
 
         </Grid>
       </form>
+      {
+        state.loading ?
+        (
+          <div className={classes.loadingContainer}>
+            <Box>
+              <CircularProgress/>
+            </Box>
+          </div>
+        ) : ''
+      }
     </div>
   )
 }
