@@ -6,6 +6,8 @@ import AppBarComponent from '../AppBar/AppBarComponent';
 import CashReceiptForm from '../CashReceipt/CashReceiptForm';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
+import AccountForm from '../Account/AccountForm';
+import AccountList from '../Account/AccountList';
 import ThirdForm from '../Third/ThirdForm';
 import ThirdList from '../Third/ThirdList';
 import ThirdMigration from '../Third/ThirdMigration';
@@ -61,6 +63,16 @@ export default function ContainerApp() {
                         <Route path={urls.app.main.home}>
                             <ProtectRoute>
                                 <IndexApp />
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.account.form}>
+                            <ProtectRoute>
+                                <AccountForm />
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.account.list}>
+                            <ProtectRoute>
+                                <AccountList />
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.third.form}>

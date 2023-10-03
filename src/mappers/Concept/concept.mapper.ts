@@ -1,4 +1,3 @@
-// conceptMapper.ts mappers/Concept
 import { Concept } from "../../schemas/Concept";
 
 export default function conceptMapper(concept: any | unknown): Concept {
