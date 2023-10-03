@@ -22,7 +22,8 @@ import {
   RecentActors,
   Description,
   Category,
-  List as ListIcon
+  List as ListIcon,
+  AccountBalanceWallet
 } from '@material-ui/icons'
 import { Collapse, Typography } from '@material-ui/core'
 import permissions from '../../../permissions.json'
@@ -109,6 +110,31 @@ const initState = {
       },
       {
         id: '002',
+        title: 'Cuentas',
+        icon: <AccountBalanceWallet/>,
+        permission: permissions.account.view,
+        indexedMenu: {
+          open: false,
+          items: [
+            {
+              id: '002-01',
+              title: 'Creación de cuentas',
+              icon: <QueueRounded />,
+              permission: permissions.account.create,
+              url: urls.app.main.account.form
+            },
+            {
+              id: '002-02',
+              title: 'Listar cuentas',
+              icon: <ListIcon/>,
+              permission: permissions.account.view,
+              url: urls.app.main.account.list
+            },
+          ]
+        }
+      },
+      {
+        id: '003',
         title: 'Administración de terceros',
         icon: <Contacts />,
         permission: permissions.third.view,
@@ -116,21 +142,21 @@ const initState = {
           open: false,
           items: [
             {
-              id: '002-01',
+              id: '003-01',
               title: 'Creación de terceros',
               icon: <ContactMail />,
               permission: permissions.third.create,
               url: urls.app.main.third.form
             },
             {
-              id: '002-02',
+              id: '003-02',
               title: 'Listar terceros',
               icon: <RecentActors/>,
               permission: permissions.third.view,
               url: urls.app.main.third.list
             },
             {
-              id: '002-03',
+              id: '003-03',
               title: 'Migración de terceros',
               icon: <ContactMail />,
               permission: permissions.third.migrate,
@@ -140,7 +166,7 @@ const initState = {
         }
       },
       {
-        id: '003',
+        id: '004',
         title: 'Conceptos',
         icon: <Category/>,
         permission: permissions.concept.view,
@@ -148,14 +174,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '003-01',
+              id: '004-01',
               title: 'Creación de conceptos',
               icon: <QueueRounded />,
               permission: permissions.concept.create,
               url: urls.app.main.concept.form
             },
             {
-              id: '003-02',
+              id: '004-02',
               title: 'Listar conceptos',
               icon: <ListIcon/>,
               permission: permissions.concept.view,
@@ -165,21 +191,21 @@ const initState = {
         }
       },
       {
-        id: '004',
+        id: '005',
         title: 'Recibos de caja',
         icon: <Keyboard />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.cashReceipt.form
       },
       {
-        id: '005',
+        id: '006',
         title: 'Transacciones internas',
         icon: <ImportExport />,
         permission: permissions.movement_internal.view,
         url: urls.app.main.internalTransaction.form
       },
       {
-        id: '006',
+        id: '007',
         title: 'Productos',
         icon: <QueueRounded/>,
         permission: permissions.item.view,
@@ -187,14 +213,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '006-01',
+              id: '007-01',
               title: 'Creación de productos',
               icon: <QueueRounded />,
               permission: permissions.item.create,
               url: urls.app.main.item.form
             },
             {
-              id: '006-02',
+              id: '007-02',
               title: 'Listar productos',
               icon: <ListIcon/>,
               permission: permissions.item.view,
@@ -204,7 +230,7 @@ const initState = {
         }
       },
       {
-        id: '007',
+        id: '008',
         title: 'Factura electrónica',
         icon: <Description/>,
         permission: permissions.electronic_bill.view,
@@ -212,14 +238,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '007-01',
+              id: '008-01',
               title: 'Crear factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
               url: urls.app.main.electronicBill.form
             },
             {
-              id: '007-02',
+              id: '008-02',
               title: 'Listar factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
@@ -229,14 +255,14 @@ const initState = {
         }
       },
       {
-        id: '008',
+        id: '009',
         title: 'Reporte de recibos',
         icon: <FindInPage />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.cashReceipt.report
       },
       {
-        id: '009',
+        id: '010',
         title: 'Reporte de transacciones',
         icon: <Assignment />,
         permission: permissions.movement_internal.view,

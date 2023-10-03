@@ -12,7 +12,7 @@ import {
   Box,
   CircularProgress
 } from '@material-ui/core'
-import { GridCellEditCommitParams, GridColDef, GridValueGetterParams } from '@material-ui/data-grid'
+import { GridCellEditCommitParams, GridColDef } from '@material-ui/data-grid'
 import { CloudDownload, Edit } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'

@@ -12,6 +12,10 @@ export const urls = {
           thirdMigrationForm: '/app/third/migration/form',
           list: '/app/third/list'
         },
+        account: {
+          form: '/app/account/form',
+          list: '/app/account/list'
+        },
         concept: {
           form: '/app/concept/form',
           list: '/app/concept/list'
