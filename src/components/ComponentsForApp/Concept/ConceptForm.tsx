@@ -70,7 +70,7 @@ const texts = {
         name: 'account',
         helperText: 'Cuenta contable del concepto',
         placeholder: 'Cuenta',
-        validationError: 'Debe ser de 8 dígitos'
+        validationError: 'Debe ser de 10 dígitos'
       },
       description: {
         name: 'description',
@@ -257,7 +257,7 @@ export default function ConceptForm() {
               helperText={ state.validations.errorMinLengthAccount ? texts.body.field.account.validationError : texts.body.field.account.helperText}
               error={state.validations.errorMinLengthAccount}
               placeholder={texts.body.field.account.placeholder}
-              inputProps={{ maxLength: 8 }}
+              inputProps={{ maxLength: 10 }}
             />
           </Grid>
 

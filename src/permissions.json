@@ -36,5 +36,10 @@
     "view": "concept_view",
     "create": "concept_create",
     "update": "concept_update"
+  },
+  "account":{
+    "view": "account_view",
+    "create": "account_create",
+    "update": "account_update"
   }
 }
