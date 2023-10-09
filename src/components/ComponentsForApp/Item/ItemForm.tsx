@@ -76,7 +76,7 @@ const texts = {
         name: 'account',
         helperText: 'Cuenta contable del producto',
         placeholder: 'Cuenta',
-        validationError: 'Debe ser de 8 dígitos'
+        validationError: 'Debe ser de 10 dígitos'
       },
       description: {
         name: 'description',
@@ -297,7 +297,7 @@ export default function ItemForm() {
                   helperText={ state.validations.errorMinLengthAccount ? texts.body.field.account.validationError : texts.body.field.account.helperText}
                   error={state.validations.errorMinLengthAccount}
                   placeholder={texts.body.field.account.placeholder}
-                  inputProps={{ maxLength: 8 }}
+                  inputProps={{ maxLength: process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT }}
                 />
               </Grid>
             ) : ''
