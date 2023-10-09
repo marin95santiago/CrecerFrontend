@@ -214,7 +214,7 @@ const initState: State = {
   errorOnMail: false,
   errorOnDocument: false,
   cities: [],
-  loading: true,
+  loading: false,
   isEdit: false
 }
 
@@ -235,6 +235,11 @@ export default function ThirdForm() {
 
   React.useEffect(() => {
     async function loadData() {
+      setState({
+        ...state,
+        loading: true
+      })
+
       const document = Utils.getIdFromUrl(search)
 
       const plemsiService = new PlemsiService()

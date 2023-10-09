@@ -471,7 +471,6 @@ export default function ElectronicBillForm() {
     })
 
     try {
-      console.log(state.selectedItems)
       const res = ElectronicBillMapper.formToSchema(state.form, state.selectedItems)
       const electronicBillService = new ElectronicBillService()
       const plemsiService = new PlemsiService()
@@ -564,7 +563,15 @@ export default function ElectronicBillForm() {
   }
 
   const cancel = () => {
-    setState(initState)
+    setState({
+      ...initState,
+      applyTaxes: false,
+      items: state.items,
+      selectedItems: [],
+      thirds: state.thirds,
+      preview: undefined,
+      loading: false
+    })
   }
 
   const onPreviewBill = () => {
