@@ -1,4 +1,4 @@
-import { Address, Entity, Signatory } from "../../schemas/Entity";
+import { Address, Entity, ReceiptNumbers, Signatory } from "../../schemas/Entity";
 
 export default function entityMapper(entity: any | unknown): Entity {
   return {
@@ -14,8 +14,20 @@ export default function entityMapper(entity: any | unknown): Entity {
     state: entity.state ?? '',
     resolution: entity.resolution ?? '',
     resolutionText: entity.resolutionText ?? '',
-    lastElectronicBillNumber: entity.lastElectronicBillNumber ?? 0
+    lastElectronicBillNumber: entity.lastElectronicBillNumber ?? 0,
+    receiptNumbers: entity.receiptNumbers ? receiptNumbersMapper(entity.receiptNumbers) : undefined
   }
+}
+
+function receiptNumbersMapper(receiptNumbers: any[]): ReceiptNumbers[] {
+  const response = receiptNumbers.map(rn => {
+    return {
+      prefix: rn.prefix ?? '',
+      lastReceiptNumber: Number(rn.lastReceiptNumber) ?? 0
+    }
+  })
+
+  return response
 }
 
 function addressMapper(address: any): Address {

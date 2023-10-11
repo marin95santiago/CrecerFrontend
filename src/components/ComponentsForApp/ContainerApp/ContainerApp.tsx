@@ -3,7 +3,8 @@ import { Switch, Route } from 'react-router-dom';
 import { urls } from '../../../urls';
 import MainMenu from '../MainMenu/MainMenu';
 import AppBarComponent from '../AppBar/AppBarComponent';
-import CashReceiptForm from '../CashReceipt/CashReceiptForm';
+import ReceiptForm from '../Receipt/ReceiptForm';
+import ReceiptList from '../Receipt/ReceiptList';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import AccountForm from '../Account/AccountForm';
@@ -14,7 +15,7 @@ import ThirdMigration from '../Third/ThirdMigration';
 import ConceptForm from '../Concept/ConceptForm';
 import ConceptList from '../Concept/ConceptList';
 import InternalTransactionForm from '../InternalTransaction/InternalTransactionForm';
-import CashReceiptReport from '../CashReceipt/CashReceiptReport';
+import CashReceiptReport from '../Receipt/CashReceiptReport';
 import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport';
 import ItemForm from '../Item/ItemForm';
 import ItemList from '../Item/ItemList';
@@ -110,9 +111,14 @@ export default function ContainerApp() {
                                 <ItemList/>
                             </ProtectRoute>
                         </Route>
-                        <Route path={urls.app.main.cashReceipt.form}>
+                        <Route path={urls.app.main.receipt.form}>
                             <ProtectRoute>
-                                <CashReceiptForm/>
+                                <ReceiptForm/>
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.receipt.list}>
+                            <ProtectRoute>
+                                <ReceiptList/>
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.electronicBill.form}>
@@ -125,7 +131,7 @@ export default function ContainerApp() {
                                 <ElectronicBillList />
                             </ProtectRoute>
                         </Route>
-                        <Route path={urls.app.main.cashReceipt.report}>
+                        <Route path={urls.app.main.receipt.report}>
                             <ProtectRoute>
                                 <CashReceiptReport />
                             </ProtectRoute>

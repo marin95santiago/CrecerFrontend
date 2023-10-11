@@ -640,6 +640,7 @@ export default function ElectronicBillForm() {
             <TextField 
               name="thirdSelected"
               value={state.thirdSelected}
+              autoComplete='off'
               variant="outlined"
               fullWidth
               disabled={state.disabledForm}

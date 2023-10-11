@@ -6,12 +6,15 @@ import {
   Box,
   CircularProgress,
   Divider,
+  FormHelperText,
   Grid,
   IconButton,
+  InputAdornment,
+  MenuItem,
   TextField,
   Typography
 } from '@material-ui/core'
-import { Cancel, NoteAdd } from '@material-ui/icons'
+import { ArrowDropDown, ArrowDropUp, Cancel, NoteAdd } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
@@ -20,6 +23,7 @@ import AccountService from '../../../services/Account'
 import { useHistory, useLocation } from 'react-router-dom'
 import Utils from '../../../utils'
 import { urls } from '../../../urls'
+import ThirdService from '../../../services/Third'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -69,6 +73,10 @@ const texts = {
         placeholder: 'Cuenta contable',
         validationError: 'Debe ser de 10 dígitos'
       },
+      thirdSelected: {
+        name: 'thirdSelected',
+        helperText: 'Entidad o persona asociada'
+      },
       description: {
         name: 'description',
         helperText: 'Escriba la descripción de la cuenta',
@@ -89,21 +97,30 @@ interface State {
   validations: {
     errorMinLengthAccount: boolean
   }
+  suggestionsThirds: any[]
+  thirds: any[]
+  thirdSelected: string
   isEdit: boolean
   loading: boolean
+  status: boolean
 }
 
 const initState: State = {
   form: {
     account: 0,
     description: '',
-    balance: 0
+    balance: 0,
+    document: 0
   },
   validations: {
     errorMinLengthAccount: false
   },
+  suggestionsThirds: [],
+  thirds: [],
+  thirdSelected: '',
   isEdit: false,
-  loading: false
+  loading: false,
+  status: false,
 }
 
 export default function AccountForm() {
@@ -119,6 +136,11 @@ export default function AccountForm() {
 
   React.useEffect(() => {
     async function loadData() {
+      // get thirds
+      const thirdService = new ThirdService()
+      const thirdsRes = await thirdService.getThirds(userContext.token || '')
+      const thirds = thirdsRes.thirds
+
       const account = Utils.getIdFromUrl(search)
 
       if (account) {
@@ -129,13 +151,29 @@ export default function AccountForm() {
         const accountService = new AccountService()
         const accountRes = await accountService.getAccountByAccount(userContext.token ?? '', account)
         if (accountRes) {
+          // get document name
+          let selectedThird = '';
+          thirds.forEach(third => {
+            if (Number(third.document) === Number(accountRes.document)) {
+              selectedThird = third.name !== undefined ? `${third.name} ${third.lastname}` : `${third.businessName}`
+            }
+          })
           setState({
             ...state,
             form: accountRes,
             loading: false,
-            isEdit: true
+            isEdit: true,
+            suggestionsThirds: thirds,
+            thirdSelected: selectedThird,
+            thirds
           })
         }
+      } else {
+        setState({
+          ...state,
+          suggestionsThirds: thirds,
+          thirds
+        })
       }
     }
     loadData()
@@ -160,6 +198,43 @@ export default function AccountForm() {
       validations: {
         errorMinLengthAccount
       }
+    })
+  }
+
+  const handleChangeSelect = (
+    name: string,
+    item: any) => {
+    if (name === texts.body.field.thirdSelected.name) {
+      setState({
+        ...state,
+        form: {
+          ...state.form,
+          document: item.document
+        },
+        thirdSelected: item.name !== undefined ? `${item.name} ${item.lastname}` : `${item.businessName}`,
+        status: false
+      })
+    }
+  }
+
+  const handleSuggestions = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+
+    const suggestionsThirds = state.thirds.filter(third => {
+      if (third.name?.toLowerCase().includes(value.toLowerCase())) {
+        return third
+      } else if (third.lastname?.toLowerCase().includes(value.toLowerCase())) {
+        return third
+      } else if (third.businessName?.toLowerCase().includes(value.toLowerCase())) {
+        return third
+      }
+    })
+
+    setState({
+      ...state,
+      thirdSelected: value,
+      suggestionsThirds,
+      status: value.length > 0 ? true : false
     })
   }
 
@@ -223,8 +298,22 @@ export default function AccountForm() {
       <form onSubmit={(e) => handleSubmit(e)}>
         <Grid container spacing={3}>
 
+          {/* ----- Form: description ------*/}
+          <Grid item md={8} sm={8} xs={10}>
+            <TextField
+              required={true}
+              name={texts.body.field.description.name}
+              value={state.form.description}
+              variant='outlined'
+              fullWidth
+              onChange={handleChange}
+              helperText={texts.body.field.description.helperText}
+              placeholder={texts.body.field.description.placeholder}
+            />
+          </Grid>
+
           {/* ----- Form: account ------*/}
-          <Grid item md={6} sm={6} xs={10}>
+          <Grid item md={4} sm={4} xs={10}>
             <TextField
               required={true}
               name={texts.body.field.account.name}
@@ -239,22 +328,60 @@ export default function AccountForm() {
             />
           </Grid>
 
-          {/* ----- Form: description ------*/}
-          <Grid item md={6} sm={6} xs={10}>
+          {/* ----- Form: third ------*/}
+          <Grid item md={8} sm={8} xs={12}>
             <TextField
-              required={true}
-              name={texts.body.field.description.name}
-              value={state.form.description}
-              variant='outlined'
+              name="document"
+              value={state.thirdSelected}
+              autoComplete='off'
+              variant="outlined"
               fullWidth
-              onChange={handleChange}
-              helperText={texts.body.field.description.helperText}
-              placeholder={texts.body.field.description.placeholder}
+              onChange={handleSuggestions}
+              required
+              InputProps={{
+                endAdornment: <InputAdornment position="end">
+                  <IconButton onClick={() => setState({ ...state, status: !state.status })}>
+                    {
+                      state.status ?
+                        (
+                          <ArrowDropUp fontSize={"small"} color="secondary" />
+                        ) :
+                        (
+                          <ArrowDropDown fontSize={"small"} color="primary" />
+                        )
+                    }
+                  </IconButton>
+                </InputAdornment>,
+              }}
             />
+            {
+              state.status === true && (
+                <Box sx={{
+                  width: '100%',
+                  maxHeight: 100,
+                  display: 'relative',
+                  zIndex: 1,
+                  bgcolor: '#E1E1E1',
+                  overflow: 'auto'
+                }}>
+                  {
+                    state.suggestionsThirds.map((third) =>
+                      <MenuItem
+                        key={third.document}
+                        onClick={() => handleChangeSelect(texts.body.field.thirdSelected.name, third)}
+                      >
+                        {third.name !== undefined ? `${third.name} ${third.lastname}` : `${third.businessName}`}
+                      </MenuItem>
+                    )
+                  }
+                </Box>
+              )
+            }
+            <FormHelperText>{texts.body.field.thirdSelected.helperText}</FormHelperText>
           </Grid>
 
           {/* ----- Form: balance ------*/}
-          <Grid item md={6} sm={6} xs={10}>
+          <Grid item md={4} sm={4} xs={10}>
             <TextField
               required={true}
               name={texts.body.field.balance.name}
