@@ -20,8 +20,9 @@ export const urls = {
           form: '/app/concept/form',
           list: '/app/concept/list'
         },
-        cashReceipt: {
-          form: '/app/cash-receipt/form',
+        receipt: {
+          form: '/app/receipt/form',
+          list: '/app/receipt/list',
           report: '/app/cash-receipt/report'
         },
         electronicBill: {
