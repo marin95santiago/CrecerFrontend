@@ -194,8 +194,26 @@ const initState = {
         id: '005',
         title: 'Recibos de caja',
         icon: <Keyboard />,
-        permission: permissions.movement_receipt.view,
-        url: urls.app.main.cashReceipt.form
+        permission: permissions.receipt.view,
+        indexedMenu: {
+          open: false,
+          items: [
+            {
+              id: '005-01',
+              title: 'Crear recibo',
+              icon: <QueueRounded />,
+              permission: permissions.receipt.create,
+              url: urls.app.main.receipt.form
+            },
+            {
+              id: '005-02',
+              title: 'Listar recibos',
+              icon: <ListIcon/>,
+              permission: permissions.receipt.view,
+              url: urls.app.main.receipt.list
+            },
+          ]
+        }
       },
       {
         id: '006',
@@ -259,7 +277,7 @@ const initState = {
         title: 'Reporte de recibos',
         icon: <FindInPage />,
         permission: permissions.movement_receipt.view,
-        url: urls.app.main.cashReceipt.report
+        url: urls.app.main.receipt.report
       },
       {
         id: '010',

@@ -41,5 +41,10 @@
     "view": "account_view",
     "create": "account_create",
     "update": "account_update"
+  },
+  "receipt":{
+    "view": "receipt_view",
+    "create": "receipt_create",
+    "update": "receipt_update"
   }
 }
