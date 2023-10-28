@@ -734,7 +734,11 @@ export default function ReceiptForm() {
               disabled={state.disabledForm}
             >
               {
-                state.costCenterList.map((cc) =>
+                state.costCenterList.filter(costCenter => {
+                  if (costCenter.type.code === 'PAY') {
+                    return costCenter
+                  }
+                }).map((cc) =>
                   <MenuItem
                     key={cc.description}
                     value={cc.code}
@@ -832,7 +836,11 @@ export default function ReceiptForm() {
               disabled={state.disabledForm}
             >
               {
-                state.costCenterList.map((cc) =>
+                state.costCenterList.filter(costCenter => {
+                  if (costCenter.type.code === 'CONCEPT') {
+                    return costCenter
+                  }
+                }).map((cc) =>
                   <MenuItem
                     key={cc.description}
                     value={cc.code}

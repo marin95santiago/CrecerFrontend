@@ -89,6 +89,12 @@ const columns: GridColDef[] = [
     flex: 2
   },
   {
+    field: 'thirdDocument',
+    headerName: 'Tercero',
+    editable: false,
+    flex: 1
+  },
+  {
     field: 'total',
     headerName: 'Total',
     editable: false,
