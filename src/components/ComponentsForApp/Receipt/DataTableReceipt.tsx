@@ -22,6 +22,7 @@ const texts = {
     headers: {
       account: 'Cuenta',
       description: 'Descripción',
+      costCenter: 'Centro de costo',
       value: 'Valor',
       delete: 'Eliminar'
     }
@@ -43,6 +44,7 @@ export default function DataTableReceipt({ rows, handleTable, disabledForm }: { 
           <TableRow>
             <TableCell>{texts.table.headers.account}</TableCell>
             <TableCell>{texts.table.headers.description}</TableCell>
+            <TableCell>{texts.table.headers.costCenter}</TableCell>
             <TableCell align="right">{texts.table.headers.value}</TableCell>
             <TableCell align="right">{texts.table.headers.delete}</TableCell>
           </TableRow>
@@ -53,6 +55,7 @@ export default function DataTableReceipt({ rows, handleTable, disabledForm }: { 
               <TableRow key={index}>
                 <TableCell component="th" >{row.account}</TableCell>
                 <TableCell component="th">{row.description}</TableCell>
+                <TableCell component="th">{row.costCenter.description}</TableCell>
                 <TableCell align="right">{row.value}</TableCell>
                 <TableCell align="right">
                   <IconButton

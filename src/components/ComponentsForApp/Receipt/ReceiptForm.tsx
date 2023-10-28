@@ -34,6 +34,8 @@ import { createAccounts, createConcepts } from '../../../mappers/Receipt/receipt
 import ReceiptService from '../../../services/Receipt'
 import { urls } from '../../../urls'
 import { useHistory, useLocation } from 'react-router-dom'
+import { CostCenter } from '../../../schemas/CostCenter'
+import CostCenterService from '../../../services/CostCenter'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -115,6 +117,10 @@ const texts = {
         name: 'currentAccount',
         helperText: 'Escoja la cuenta'
       },
+      currentAccountCostCenter: {
+        name: 'currentAccountCostCenter',
+        helperText: 'Escoja el centro de costo'
+      },
       currentAccountValue: {
         name: 'currentAccountValue',
         helperText: 'Valor',
@@ -123,6 +129,10 @@ const texts = {
       currentConcept: {
         name: 'currentConcept',
         helperText: 'Escoja un cencepto'
+      },
+      currentConceptCostCenter: {
+        name: 'currentConceptCostCenter',
+        helperText: 'Escoja el centro de costo'
       },
       currentConceptValue: {
         name: 'currentConceptValue',
@@ -145,8 +155,11 @@ interface State {
   currentConcept?: Concept
   currentConceptValue: number
   conceptTotal: number
+  currentAccountCostCenter?: any
+  currentConceptCostCenter?: any
   thirds: Third[]
   conceptList: Concept[]
+  costCenterList: CostCenter[]
   suggestionsThirds: any[]
   selectedAccounts: any[]
   selectedConcepts: any[]
@@ -178,6 +191,7 @@ const initState: State = {
   conceptTotal: 0,
   thirds: [],
   conceptList: [],
+  costCenterList: [],
   suggestionsThirds: [],
   selectedAccounts: [],
   selectedConcepts: [],
@@ -227,12 +241,18 @@ export default function ReceiptForm() {
         const conceptRes = await conceptService.getConcepts(userContext.token || '')
         const concepts = conceptRes.concepts
 
+        // get cost center
+        const costCenterService = new CostCenterService()
+        const costCenterRes = await costCenterService.getCostCenters(userContext.token || '')
+        const costCenters = costCenterRes.costCenters
+
         setState({
           ...state,
           thirds,
           suggestionsThirds: thirds,
           conceptList: concepts,
           accountList: accounts,
+          costCenterList: costCenters,
           prefix: entityContext.receiptNumbers ?? [],
           loading: false
         })
@@ -275,7 +295,7 @@ export default function ReceiptForm() {
           code: item.code
         }
       })
-    } else if (name === texts.body.field.currentAccount.name || name === texts.body.field.currentConcept.name) {
+    } else if (name === texts.body.field.currentAccount.name || name === texts.body.field.currentAccountCostCenter.name || name === texts.body.field.currentConceptCostCenter.name || name === texts.body.field.currentConcept.name) {
       setState({
         ...state,
         [name]: item
@@ -368,7 +388,8 @@ export default function ReceiptForm() {
       const total = Number(state.accountTotal) + Number(state.currentAccountValue)
       const newAccount = {
         ...state.currentAccount,
-        value: state.currentAccountValue
+        value: state.currentAccountValue,
+        costCenter: state.currentAccountCostCenter
       }
       const accounts = state.selectedAccounts
       accounts.push(newAccount)
@@ -376,6 +397,7 @@ export default function ReceiptForm() {
         ...state,
         selectedAccounts: accounts,
         currentAccount: undefined,
+        currentAccountCostCenter: undefined,
         currentAccountValue: 0,
         accountTotal: total
       })
@@ -400,7 +422,8 @@ export default function ReceiptForm() {
       const total = Number(state.conceptTotal) + Number(state.currentConceptValue)
       const newConcept = {
         ...state.currentConcept,
-        value: state.currentConceptValue
+        value: state.currentConceptValue,
+        costCenter: state.currentConceptCostCenter
       }
       const concepts = state.selectedConcepts
       concepts.push(newConcept)
@@ -417,6 +440,7 @@ export default function ReceiptForm() {
           }
         }),
         currentConcept: undefined,
+        currentConceptCostCenter: undefined,
         currentConceptValue: 0,
         conceptTotal: total
       })
@@ -678,7 +702,7 @@ export default function ReceiptForm() {
             <Divider className={classes.divider} />
           </Grid>
 
-          <Grid item md={6} sm={6} xs={12}>
+          <Grid item md={4} sm={6} xs={12}>
             <Select
               name={texts.body.field.currentAccount.name}
               value={state.currentAccount?.account ?? ''}
@@ -702,6 +726,29 @@ export default function ReceiptForm() {
           </Grid>
 
           <Grid item md={3} sm={6} xs={12}>
+            <Select
+              name={texts.body.field.currentAccountCostCenter.name}
+              value={state.currentAccountCostCenter?.code ?? ''}
+              variant="outlined"
+              fullWidth
+              disabled={state.disabledForm}
+            >
+              {
+                state.costCenterList.map((cc) =>
+                  <MenuItem
+                    key={cc.description}
+                    value={cc.code}
+                    onClick={() => handleChangeSelect(texts.body.field.currentAccountCostCenter.name, cc)}
+                  >
+                    {cc.description}
+                  </MenuItem>
+                )
+              }
+            </Select>
+            <FormHelperText>{texts.body.field.currentAccountCostCenter.helperText}</FormHelperText>
+          </Grid>
+
+          <Grid item md={3} sm={6} xs={12}>
             <TextField
               name={texts.body.field.currentAccountValue.name}
               value={state.currentAccountValue}
@@ -715,7 +762,7 @@ export default function ReceiptForm() {
             />
           </Grid>
 
-          <Grid item md={3} sm={6} xs={12}>
+          <Grid item md={2} sm={6} xs={12}>
             <Button
               variant="contained"
               type="button"
@@ -747,7 +794,7 @@ export default function ReceiptForm() {
             <Divider className={classes.divider} />
           </Grid>
 
-          <Grid item md={6} sm={6} xs={12}>
+          <Grid item md={4} sm={6} xs={12}>
             <Select
               name={texts.body.field.currentConcept.name}
               value={state.currentConcept?.account ?? ''}
@@ -777,6 +824,29 @@ export default function ReceiptForm() {
           </Grid>
 
           <Grid item md={3} sm={6} xs={12}>
+            <Select
+              name={texts.body.field.currentConceptCostCenter.name}
+              value={state.currentConceptCostCenter?.code ?? ''}
+              variant="outlined"
+              fullWidth
+              disabled={state.disabledForm}
+            >
+              {
+                state.costCenterList.map((cc) =>
+                  <MenuItem
+                    key={cc.description}
+                    value={cc.code}
+                    onClick={() => handleChangeSelect(texts.body.field.currentConceptCostCenter.name, cc)}
+                  >
+                    {cc.description}
+                  </MenuItem>
+                )
+              }
+            </Select>
+            <FormHelperText>{texts.body.field.currentConceptCostCenter.helperText}</FormHelperText>
+          </Grid>
+
+          <Grid item md={3} sm={6} xs={12}>
             <TextField
               name={texts.body.field.currentConceptValue.name}
               value={state.currentConceptValue}
@@ -790,7 +860,7 @@ export default function ReceiptForm() {
             />
           </Grid>
 
-          <Grid item md={3} sm={6} xs={12}>
+          <Grid item md={2} sm={6} xs={12}>
             <Button
               variant="contained"
               type="button"

@@ -122,7 +122,7 @@ function ActionButtons(props: any) {
   const history = useHistory()
 
   const onEdit = () => {
-    history.push(`${urls.app.main.concept.form}?document=${props.params.row.account ?? ''}`)
+    history.push(`${urls.app.main.concept.form}?account=${props.params.row.account ?? ''}`)
   }
 
   React.useEffect(() => {

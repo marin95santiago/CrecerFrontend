@@ -1,12 +1,14 @@
 export interface AccountReceipt {
   account: number
   value: number
+  costCenterCode: string
 }
 
 export interface ConceptReceipt {
   account: number
   value: number
   description: string
+  costCenterCode: string
 }
 
 export interface Receipt {

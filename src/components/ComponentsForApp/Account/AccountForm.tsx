@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 // - in this part all the component texts are housed
 const texts = {
   header: {
-    description: 'Crear cuentas'
+    description: 'Crear forma de pago'
   },
   body: {
     field: {
