@@ -185,7 +185,7 @@ export default function CostCenterForm() {
       }
 
       setState(initState)
-      history.push(urls.app.main.concept.form)
+      history.push(urls.app.main.costCenter.form)
       return toast.success(`El centro de costo ${costCenterCreated.code} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
