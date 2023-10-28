@@ -130,12 +130,12 @@ const texts = {
         one: {
           name: {
             name: 'name',
-            helperText: 'Escriba el primer nombre de la persona',
+            helperText: 'Escriba el/los nombre(s) de la persona',
             placeholder: 'Nombre'
           },
           lastname: {
             name: 'lastname',
-            helperText: 'Escriba el apellido de la persona',
+            helperText: 'Escriba el/los apellido(s) de la persona',
             placeholder: 'Apellido(s)'
           }
         },

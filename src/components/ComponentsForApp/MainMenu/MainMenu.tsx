@@ -23,7 +23,8 @@ import {
   Description,
   Category,
   List as ListIcon,
-  AccountBalanceWallet
+  AccountBalanceWallet,
+  Store
 } from '@material-ui/icons'
 import { Collapse, Typography } from '@material-ui/core'
 import permissions from '../../../permissions.json'
@@ -110,7 +111,7 @@ const initState = {
       },
       {
         id: '002',
-        title: 'Cuentas',
+        title: 'Formas de pago',
         icon: <AccountBalanceWallet/>,
         permission: permissions.account.view,
         indexedMenu: {
@@ -118,14 +119,14 @@ const initState = {
           items: [
             {
               id: '002-01',
-              title: 'Creación de cuentas',
+              title: 'Creación de forma de pago',
               icon: <QueueRounded />,
               permission: permissions.account.create,
               url: urls.app.main.account.form
             },
             {
               id: '002-02',
-              title: 'Listar cuentas',
+              title: 'Listar formas de pago',
               icon: <ListIcon/>,
               permission: permissions.account.view,
               url: urls.app.main.account.list
@@ -186,12 +187,37 @@ const initState = {
               icon: <ListIcon/>,
               permission: permissions.concept.view,
               url: urls.app.main.concept.list
-            },
+            }
           ]
         }
       },
       {
         id: '005',
+        title: 'Centro de costos',
+        icon: <Store/>,
+        permission: permissions.cost_center.view,
+        indexedMenu: {
+          open: false,
+          items: [
+            {
+              id: '005-01',
+              title: 'Creación de centro de costo',
+              icon: <QueueRounded />,
+              permission: permissions.cost_center.create,
+              url: urls.app.main.costCenter.form
+            },
+            {
+              id: '005-02',
+              title: 'Listar centros de costos',
+              icon: <ListIcon/>,
+              permission: permissions.cost_center.view,
+              url: urls.app.main.costCenter.list
+            }
+          ]
+        }
+      },
+      {
+        id: '006',
         title: 'Recibos de caja',
         icon: <Keyboard />,
         permission: permissions.receipt.view,
@@ -199,14 +225,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '005-01',
+              id: '006-01',
               title: 'Crear recibo',
               icon: <QueueRounded />,
               permission: permissions.receipt.create,
               url: urls.app.main.receipt.form
             },
             {
-              id: '005-02',
+              id: '006-02',
               title: 'Listar recibos',
               icon: <ListIcon/>,
               permission: permissions.receipt.view,
@@ -216,14 +242,14 @@ const initState = {
         }
       },
       {
-        id: '006',
+        id: '007',
         title: 'Transacciones internas',
         icon: <ImportExport />,
         permission: permissions.movement_internal.view,
         url: urls.app.main.internalTransaction.form
       },
       {
-        id: '007',
+        id: '008',
         title: 'Productos',
         icon: <QueueRounded/>,
         permission: permissions.item.view,
@@ -231,14 +257,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '007-01',
+              id: '008-01',
               title: 'Creación de productos',
               icon: <QueueRounded />,
               permission: permissions.item.create,
               url: urls.app.main.item.form
             },
             {
-              id: '007-02',
+              id: '008-02',
               title: 'Listar productos',
               icon: <ListIcon/>,
               permission: permissions.item.view,
@@ -248,7 +274,7 @@ const initState = {
         }
       },
       {
-        id: '008',
+        id: '009',
         title: 'Factura electrónica',
         icon: <Description/>,
         permission: permissions.electronic_bill.view,
@@ -256,14 +282,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '008-01',
+              id: '009-01',
               title: 'Crear factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
               url: urls.app.main.electronicBill.form
             },
             {
-              id: '008-02',
+              id: '009-02',
               title: 'Listar factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
@@ -273,14 +299,14 @@ const initState = {
         }
       },
       {
-        id: '009',
+        id: '010',
         title: 'Reporte de recibos',
         icon: <FindInPage />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.receipt.report
       },
       {
-        id: '010',
+        id: '011',
         title: 'Reporte de transacciones',
         icon: <Assignment />,
         permission: permissions.movement_internal.view,

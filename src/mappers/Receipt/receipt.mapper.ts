@@ -5,7 +5,8 @@ export function createAccounts(data: any[], type?: any): AccountReceipt[] {
   data.forEach((item: any) => {
     res.push({
       account: Number(item.account),
-      value: type && type.code === 'EGR' ? Number(item.value * -1) : Number(item.value)
+      value: type && type.code === 'EGR' ? Number(item.value * -1) : Number(item.value),
+      costCenterCode: item.costCenterCode ? item.costCenterCode :  item.costCenter.code
     })
   })
 
@@ -18,7 +19,8 @@ export function createConcepts(data: any[]): ConceptReceipt[] {
     res.push({
       account: Number(item.account),
       value: Number(item.value),
-      description: item.description
+      description: item.description,
+      costCenterCode: item.costCenterCode ? item.costCenterCode :  item.costCenter.code
     })
   })
 
