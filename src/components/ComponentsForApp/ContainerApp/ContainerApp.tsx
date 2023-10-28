@@ -23,6 +23,8 @@ import ElectronicBillForm from '../ElectronicBill/ElectronicBillForm';
 import IndexApp from '../Index/IndexApp';
 import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute';
 import ElectronicBillList from '../ElectronicBill/ElectronicBillList';
+import CostCenterForm from '../CostCenter/CostCenterForm';
+import CostCenterList from '../CostCenter/CostCenterList';
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) =>
@@ -99,6 +101,16 @@ export default function ContainerApp() {
                         <Route path={urls.app.main.concept.list}>
                             <ProtectRoute>
                                 <ConceptList />
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.costCenter.form}>
+                            <ProtectRoute>
+                                <CostCenterForm />
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.costCenter.list}>
+                            <ProtectRoute>
+                                <CostCenterList />
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.item.form}>

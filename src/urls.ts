@@ -20,6 +20,10 @@ export const urls = {
           form: '/app/concept/form',
           list: '/app/concept/list'
         },
+        costCenter: {
+          form: '/app/cost-center/form',
+          list: '/app/cost-center/list'
+        },
         receipt: {
           form: '/app/receipt/form',
           list: '/app/receipt/list',

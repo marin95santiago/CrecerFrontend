@@ -37,6 +37,11 @@
     "create": "concept_create",
     "update": "concept_update"
   },
+  "cost_center":{
+    "view": "cost_center_view",
+    "create": "cost_center_create",
+    "update": "cost_center_update"
+  },
   "account":{
     "view": "account_view",
     "create": "account_create",
