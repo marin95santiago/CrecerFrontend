@@ -344,7 +344,8 @@ export default function ElectronicBillForm() {
             ...state,
             thirds: thirds.thirds,
             suggestionsThirds: thirds.thirds,
-            items: items.items
+            items: items.items,
+            selectedItems: []
           })
         }
       } catch (error) {
