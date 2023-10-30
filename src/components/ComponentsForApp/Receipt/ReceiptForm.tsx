@@ -494,6 +494,7 @@ export default function ReceiptForm() {
         accountList: state.accountList,
         thirds: state.thirds,
         conceptList: state.conceptList,
+        costCenterList: state.costCenterList,
         loading: false
       })
   
