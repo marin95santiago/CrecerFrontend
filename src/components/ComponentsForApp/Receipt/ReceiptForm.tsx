@@ -249,6 +249,8 @@ export default function ReceiptForm() {
         setState({
           ...state,
           thirds,
+          selectedAccounts: [],
+          selectedConcepts: [],
           suggestionsThirds: thirds,
           conceptList: concepts,
           accountList: accounts,
@@ -522,6 +524,7 @@ export default function ReceiptForm() {
       accountList: state.accountList,
       thirds: state.thirds,
       conceptList: state.conceptList,
+      costCenterList: state.costCenterList,
       loading: false
     })
   }
