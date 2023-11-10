@@ -102,6 +102,19 @@ const Utils = {
     }
   },
 
+  getCodeFromUrl: (search: string): string | undefined => {
+    if (search !== undefined) {
+      const regex = /=\s*(\S+)/g;
+      const match = search.match(regex);
+      if (match) {
+        const document = match[0].substring(1);
+        return document;
+      }
+    } else {
+      return undefined;
+    }
+  },
+
   parseQueryString: (url: string) : { [key: string]: string }[] => {
     const queryString = url.split('?')[1]
     if (!queryString) {
@@ -114,6 +127,10 @@ const Utils = {
       result.push({ [key]: decodeURIComponent(value) })
     }
     return result
+  },
+
+  formatNumber: (number: number): string => {
+    return number.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 }
 

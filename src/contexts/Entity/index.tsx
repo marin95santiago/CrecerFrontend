@@ -13,6 +13,7 @@ const initialState: Entity = {
   name: '',
   entityTypeCode: '',
   document: '',
+  dv: 0,
   signatories: undefined,
   address: undefined,
   email: undefined,

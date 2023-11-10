@@ -21,6 +21,8 @@ import DataTable from '../DataTable/DataTable'
 import { urls } from '../../../urls'
 import permissions from '../../../permissions.json'
 import ReceiptService from '../../../services/Receipt'
+import ThirdsContext from '../../../contexts/Third'
+import { ThirdsContextType } from '../../../schemas/Third'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -80,7 +82,7 @@ const columns: GridColDef[] = [
     field: 'date',
     headerName: 'Fecha',
     editable: false,
-    flex: 2
+    flex: 1
   },
   {
     field: 'description',
@@ -89,10 +91,10 @@ const columns: GridColDef[] = [
     flex: 2
   },
   {
-    field: 'thirdDocument',
+    field: 'thirdName',
     headerName: 'Tercero',
     editable: false,
-    flex: 1
+    flex: 2
   },
   {
     field: 'total',
@@ -126,28 +128,43 @@ const initState: State = {
 }
 
 function ActionButtons(props: any) {
+
+  const history = useHistory()
   const [editPermission, setEditPermission] = useState<boolean>(false)
+
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
-  const history = useHistory()
-
-  const onEdit = () => {
-    history.push(`${urls.app.main.item.form}?document=${props.params.row.code ?? ''}`)
-  }
 
   React.useEffect(() => {
     setEditPermission(userContext.permissions.some(permission => permission === permissions.receipt.update))
   }, [userContext])
 
+  const onEdit = () => {
+    history.push(`${urls.app.main.receipt.form}?code=${props.params.row.code ?? ''}`)
+  }
+
+  const onDownload = () => {
+    return window.open(`${urls.app.main.receipt.print}?code=${props.params.row.code ?? ''}`, '_blank')
+  }
+
   return (
-    <IconButton
-      type="submit"
-      onClick={() => onEdit()}
-      disabled={!editPermission}
-    >
-      <Edit fontSize={"small"} color={editPermission ? "primary" : "inherit"} />
-    </IconButton>
+    <React.Fragment>
+      <IconButton
+        type="submit"
+        onClick={() => onEdit()}
+        disabled={!editPermission}
+      >
+        <Edit fontSize={"small"} color={editPermission ? "primary" : "inherit"} />
+      </IconButton>
+
+      <IconButton
+        type="submit"
+        onClick={() => onDownload()}
+      >
+        <CloudDownload fontSize={"small"} color="action" />
+      </IconButton>
+    </React.Fragment>
   )
 }
 
@@ -160,13 +177,24 @@ export default function ItemList() {
     UserContext
   ) as UserContextType
 
+  const { thirdsContext } = React.useContext(
+    ThirdsContext
+  ) as ThirdsContextType
+
+
   React.useEffect(() => {
     async function loadData() {
       const receiptService = new ReceiptService()
       const response = await receiptService.getReceipts(userContext.token || '', { limit: 5 })
       setState({
         ...state,
-        receipts: response.receipts,
+        receipts: response.receipts.map(receipt => {
+          const third = thirdsContext.find(third => third.document === receipt.thirdDocument)
+          return {
+            ...receipt,
+            thirdName: third ? (third.name ? `${third.name} ${third.lastname}` : `${third.businessName}`) : 'NA'
+          }
+        }),
         lastEvaluatedKey: response.lastEvaluatedKey,
         loadMoreButtonDisabled: response.lastEvaluatedKey !== undefined ? false : true,
         loading: false
@@ -179,9 +207,17 @@ export default function ItemList() {
     try {
       const receiptService = new ReceiptService()
       const response = await receiptService.getReceipts(userContext.token || '', { limit: 5, lastEvaluatedKey: state.lastEvaluatedKey })
+      const receipts = response.receipts.map(receipt => {
+        const third = thirdsContext.find(third => third.document === receipt.thirdDocument)
+        return {
+          ...receipt,
+          thirdName: third ? (third.name ? `${third.name} ${third.lastname}` : `${third.businessName}`) : 'NA'
+        }
+      })
+
       setState({
         ...state,
-        receipts: state.receipts.concat(response.receipts),
+        receipts: state.receipts.concat(receipts),
         lastEvaluatedKey: response.lastEvaluatedKey,
         loadMoreButtonDisabled: response.lastEvaluatedKey !== undefined ? false : true
       })

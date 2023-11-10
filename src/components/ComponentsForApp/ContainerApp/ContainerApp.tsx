@@ -1,30 +1,31 @@
-import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import { urls } from '../../../urls';
-import MainMenu from '../MainMenu/MainMenu';
-import AppBarComponent from '../AppBar/AppBarComponent';
-import ReceiptForm from '../Receipt/ReceiptForm';
-import ReceiptList from '../Receipt/ReceiptList';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
-import AccountForm from '../Account/AccountForm';
-import AccountList from '../Account/AccountList';
-import ThirdForm from '../Third/ThirdForm';
-import ThirdList from '../Third/ThirdList';
-import ThirdMigration from '../Third/ThirdMigration';
-import ConceptForm from '../Concept/ConceptForm';
-import ConceptList from '../Concept/ConceptList';
-import InternalTransactionForm from '../InternalTransaction/InternalTransactionForm';
-import CashReceiptReport from '../Receipt/CashReceiptReport';
-import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport';
-import ItemForm from '../Item/ItemForm';
-import ItemList from '../Item/ItemList';
-import ElectronicBillForm from '../ElectronicBill/ElectronicBillForm';
-import IndexApp from '../Index/IndexApp';
-import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute';
-import ElectronicBillList from '../ElectronicBill/ElectronicBillList';
-import CostCenterForm from '../CostCenter/CostCenterForm';
-import CostCenterList from '../CostCenter/CostCenterList';
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
+import { urls } from '../../../urls'
+import MainMenu from '../MainMenu/MainMenu'
+import AppBarComponent from '../AppBar/AppBarComponent'
+import ReceiptForm from '../Receipt/ReceiptForm'
+import ReceiptList from '../Receipt/ReceiptList'
+import ReceiptPrint from '../Receipt/ReceiptPrint'
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
+import { CssBaseline } from '@material-ui/core'
+import AccountForm from '../Account/AccountForm'
+import AccountList from '../Account/AccountList'
+import ThirdForm from '../Third/ThirdForm'
+import ThirdList from '../Third/ThirdList'
+import ThirdMigration from '../Third/ThirdMigration'
+import ConceptForm from '../Concept/ConceptForm'
+import ConceptList from '../Concept/ConceptList'
+import InternalTransactionForm from '../InternalTransaction/InternalTransactionForm'
+import CashReceiptReport from '../Receipt/CashReceiptReport'
+import InternalTransactionReport from '../InternalTransaction/InternalTransactionReport'
+import ItemForm from '../Item/ItemForm'
+import ItemList from '../Item/ItemList'
+import ElectronicBillForm from '../ElectronicBill/ElectronicBillForm'
+import IndexApp from '../Index/IndexApp'
+import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute'
+import ElectronicBillList from '../ElectronicBill/ElectronicBillList'
+import CostCenterForm from '../CostCenter/CostCenterForm'
+import CostCenterList from '../CostCenter/CostCenterList'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) =>
@@ -40,11 +41,11 @@ const useStyles = makeStyles((theme: Theme) =>
         flexGrow: 1,
     }
   }),
-);
+)
 
 export default function ContainerApp() {
 
-    const classes = useStyles();
+    const classes = useStyles()
 
     return (
         <div className={classes.root}>
@@ -133,6 +134,11 @@ export default function ContainerApp() {
                                 <ReceiptList/>
                             </ProtectRoute>
                         </Route>
+                        <Route path={urls.app.main.receipt.print}>
+                            <ProtectRoute>
+                                <ReceiptPrint/>
+                            </ProtectRoute>
+                        </Route>
                         <Route path={urls.app.main.electronicBill.form}>
                             <ProtectRoute>
                                 <ElectronicBillForm />
@@ -162,5 +168,5 @@ export default function ContainerApp() {
                 </div>
             </div>
         </div>
-    );
+    )
 }

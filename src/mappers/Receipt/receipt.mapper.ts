@@ -6,6 +6,7 @@ export function createAccounts(data: any[], type?: any): AccountReceipt[] {
     res.push({
       account: Number(item.account),
       value: type && type.code === 'EGR' ? Number(item.value * -1) : Number(item.value),
+      description: item.description,
       costCenterCode: item.costCenterCode ? item.costCenterCode :  item.costCenter.code
     })
   })

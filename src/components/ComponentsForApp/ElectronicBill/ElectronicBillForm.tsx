@@ -23,8 +23,10 @@ import { Cancel, NoteAdd, Save, ArrowDropDown, ArrowDropUp } from '@material-ui/
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import EntityContext from '../../../contexts/Entity'
+import ThirdsContext from '../../../contexts/Third'
 import { EntityContextType } from '../../../schemas/Entity'
 import { UserContextType } from '../../../schemas/User'
+import { ThirdsContextType } from '../../../schemas/Third'
 import { ElectronicBillFormSchema } from '../../../schemas/ElectronicBill'
 import ElectronicBillService from '../../../services/ElectronicBill'
 import Utils from '../../../utils'
@@ -276,6 +278,10 @@ export default function ElectronicBillForm() {
     EntityContext
   ) as EntityContextType
 
+  const { setThirdsContext } = React.useContext(
+    ThirdsContext
+  ) as ThirdsContextType
+
   React.useEffect(() => {
 
     async function loadData() {
@@ -317,6 +323,8 @@ export default function ElectronicBillForm() {
             const itemService = new ItemService()
             const thirdsRes = await thirdService.getThirds(userContext.token || '')
             const itemsRes = await itemService.getItems(userContext.token || '')
+            setThirdsContext(thirdsRes.thirds) // save in context
+            localStorage.setItem('thirds', JSON.stringify(thirdsRes.thirds))
             thirds = thirdsRes.thirds
             items = itemsRes.items
           }
@@ -340,6 +348,7 @@ export default function ElectronicBillForm() {
           const itemService = new ItemService()
           const thirds = await thirdService.getThirds(userContext.token || '')
           const items = await itemService.getItems(userContext.token || '')
+
           setState({
             ...state,
             thirds: thirds.thirds,
@@ -347,6 +356,8 @@ export default function ElectronicBillForm() {
             items: items.items,
             selectedItems: []
           })
+          setThirdsContext(thirds.thirds) // save in context
+          localStorage.setItem('thirds', JSON.stringify(thirds.thirds))
         }
       } catch (error) {
 
