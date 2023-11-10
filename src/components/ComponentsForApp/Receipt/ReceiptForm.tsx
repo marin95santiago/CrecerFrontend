@@ -36,6 +36,8 @@ import { urls } from '../../../urls'
 import { useHistory, useLocation } from 'react-router-dom'
 import { CostCenter } from '../../../schemas/CostCenter'
 import CostCenterService from '../../../services/CostCenter'
+import ThirdsContext from '../../../contexts/Third'
+import { ThirdsContextType } from '../../../schemas/Third'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -217,6 +219,10 @@ export default function ReceiptForm() {
     EntityContext
   ) as EntityContextType
 
+  const { setThirdsContext } = React.useContext(
+    ThirdsContext
+  ) as ThirdsContextType
+
   React.useEffect(() => {
     async function loadData() {
 
@@ -230,6 +236,8 @@ export default function ReceiptForm() {
         const thirdService = new ThirdService()
         const thirdsRes = await thirdService.getThirds(userContext.token || '')
         const thirds = thirdsRes.thirds
+        setThirdsContext(thirdsRes.thirds) // save in context
+        localStorage.setItem('thirds', JSON.stringify(thirdsRes.thirds))
 
         // get accounts
         const accountService = new AccountService()
@@ -352,33 +360,6 @@ export default function ReceiptForm() {
       suggestionsThirds,
       status: value.length > 0 ? true : false
     })
-  }
-
-  // Function for thousand separator
-  // this function adds thousand separator to numbers in:
-  // fields: valueNumber.
-  const thousandSeparator = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    // setConceptValue(value)
-    if (name === 'conceptValue') {
-      let input = value.split(',').join('')
-      let newInput = input.split('').reverse()
-
-      let output = []
-      let aux = ''
-      let paginator = Math.ceil(newInput.length / 3)
-
-      for (let i = 0; i < paginator; i++) {
-        for (let j = 0; j < 3; j++) {
-          if (newInput[j + (i * 3)] !== undefined) {
-            aux += newInput[j + (i * 3)]
-          }
-        }
-        output.push(aux)
-        aux = ''
-        // setConceptValue(output.join(',').split('').reverse().join(''))
-      }
-    }
   }
 
   // HandleTable is the handler to add and remove items

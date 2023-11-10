@@ -26,6 +26,7 @@ export interface Entity {
   name: string
   entityTypeCode: string
   document: string
+  dv: number
   signatories?: Signatory[]
   address?: Address
   email?: string

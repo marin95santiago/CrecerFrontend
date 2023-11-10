@@ -1,6 +1,7 @@
 export interface AccountReceipt {
   account: number
   value: number
+  description: string
   costCenterCode: string
 }
 

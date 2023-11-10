@@ -29,3 +29,8 @@ export interface Third {
   }
   email: string
 }
+
+export type ThirdsContextType = {
+  thirdsContext: Third[];
+  setThirdsContext: (value: Third[]) => void;
+};

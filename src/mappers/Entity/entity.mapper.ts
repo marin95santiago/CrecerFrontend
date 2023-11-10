@@ -6,6 +6,7 @@ export default function entityMapper(entity: any | unknown): Entity {
     name: entity.name ?? '',
     entityTypeCode: entity.entityTypeCode ?? '',
     document: entity.document ?? '',
+    dv: entity.dv ?? 0,
     signatories: entity.signatories ? signatoriesMapper(entity.signatories) : undefined,
     address: entity.address ? addressMapper(entity.address) : undefined,
     email: entity.email ?? '',
