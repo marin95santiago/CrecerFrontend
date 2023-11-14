@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { receiptMapper } from '../../mappers/Receipt/receipt.mapper'
+import { dailyReportMapper, receiptMapper } from '../../mappers/Receipt/receipt.mapper'
 import { Receipt } from '../../schemas/Receipt'
+import { DailyReportReceipt } from '../../schemas/Receipt/dailyReport.schema'
 
 class ReceiptService {
   async saveReceipt(receiptData: Receipt, token: string) {
@@ -55,6 +56,25 @@ class ReceiptService {
         lastEvaluatedKey: JSON.stringify(responseApi.data.lastEvaluatedKey),
         receipts: receipts
       }
+
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getDailyReport(token: string, date: string) : Promise<DailyReportReceipt> {
+    try {
+      let url = `${process.env.REACT_APP_API}/api/v2/receipt/daily-report?date=${date}`
+  
+      const responseApi = await axios.get(url, {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      })
+
+      const report = dailyReportMapper(responseApi.data)
+
+      return report
 
     } catch (error) {
       throw error

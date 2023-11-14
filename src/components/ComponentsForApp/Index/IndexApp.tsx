@@ -8,6 +8,8 @@ import {
   Theme,
   Typography
 } from '@material-ui/core'
+import axios, { AxiosError } from 'axios'
+import { toast } from 'react-toastify'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
 import EntityContext from '../../../contexts/Entity'
@@ -15,6 +17,9 @@ import { EntityContextType } from '../../../schemas/Entity'
 import BalanceCard from './Card/BalanceCard'
 import LineGraphic from './Graphics/LineGraphic/LineGraphic'
 import DailyReportForm from './DailyReport/DailyReportForm'
+import { Account } from '../../../schemas/Account'
+import AccountService from '../../../services/Account'
+import { ServerError } from '../../../schemas/Error'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -87,8 +92,16 @@ const texts = {
   }
 }
 
-export default function IndexApp() {
+interface State {
+  accounts: Account[]
+}
 
+const initState: State = {
+  accounts: []
+}
+
+export default function IndexApp() {
+  const classes = useStyles()
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
@@ -97,7 +110,29 @@ export default function IndexApp() {
     EntityContext
   ) as EntityContextType
 
-  const classes = useStyles()
+  const [state, setState] = React.useState<State>(initState)
+  
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const accountService = new AccountService()
+        const accountRes = await accountService.getAccounts(userContext.token ?? '')
+        setState({
+          ...state,
+          accounts: accountRes.accounts
+        })
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const serverError = error as AxiosError<ServerError>
+          if (serverError && serverError.response) {
+            return toast.error(serverError.response.data.message)
+          }
+        }
+      }
+    }
+
+    loadData()
+  }, [])
 
   return (
     <div className={classes.root}>
@@ -130,17 +165,17 @@ export default function IndexApp() {
 
             {/* --------------------- *Cash balance card ------------------ */}
             <Grid item md={4} sm={6} xs={12} className={classes.gridCard}>
-              <BalanceCard data={texts.body.cards.cashBalance} />
+              <BalanceCard data={state.accounts[0] ?? []} />
             </Grid>
 
             {/* --------------------- *Bank balance card ------------------ */}
             <Grid item md={4} sm={6} xs={12} className={classes.gridCard}>
-              <BalanceCard data={texts.body.cards.bankBalance} />
+              <BalanceCard data={state.accounts[1] ?? []} />
             </Grid>
 
             {/* -------------------- *Percent balance card ----------------- */}
             <Grid item md={4} sm={6} xs={12} className={classes.gridCard}>
-              <BalanceCard data={texts.body.cards.percentBalance} />
+              <BalanceCard data={state.accounts[2] ?? []} />
             </Grid>
 
             {/* -------------------- *Graphic balance card ----------------- */}

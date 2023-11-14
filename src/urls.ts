@@ -27,7 +27,9 @@ export const urls = {
         receipt: {
           form: '/app/receipt/form',
           list: '/app/receipt/list',
-          report: '/app/cash-receipt/report'
+          report: '/app/cash-receipt/report',
+          print: '/app/receipt/print',
+          print_daily_report: '/app/receipt/print-daily-report'
         },
         electronicBill: {
           form: '/app/electronic-bill/form',
