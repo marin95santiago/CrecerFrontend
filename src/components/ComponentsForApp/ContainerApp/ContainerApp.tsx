@@ -26,6 +26,7 @@ import ProtectRoute from '../../ComponentsForProtectRoutes/ProtectRoute'
 import ElectronicBillList from '../ElectronicBill/ElectronicBillList'
 import CostCenterForm from '../CostCenter/CostCenterForm'
 import CostCenterList from '../CostCenter/CostCenterList'
+import DailyReportPrint from '../Receipt/DailyReportPrint'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) =>
@@ -137,6 +138,11 @@ export default function ContainerApp() {
                         <Route path={urls.app.main.receipt.print}>
                             <ProtectRoute>
                                 <ReceiptPrint/>
+                            </ProtectRoute>
+                        </Route>
+                        <Route path={urls.app.main.receipt.print_daily_report}>
+                            <ProtectRoute>
+                                <DailyReportPrint/>
                             </ProtectRoute>
                         </Route>
                         <Route path={urls.app.main.electronicBill.form}>

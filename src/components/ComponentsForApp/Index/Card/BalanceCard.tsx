@@ -8,8 +8,10 @@ import {
     Tooltip,
     Typography 
 } from "@material-ui/core";
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import { Account } from "../../../../schemas/Account";
+import Utils from "../../../../utils";
+import { Link } from "react-router-dom";
+import { urls } from "../../../../urls";
 
 // ------------------- Styles ----------------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -29,19 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }));
 
-// ---------- Type for the info from props ----------
-type data = {
-    title: string,
-    value: string,
-    prefix: string,
-    percent: {
-        value: number,
-        tooltip: string,
-        prefix: string
-    }
-}
-
-export default function BalanceCard({ data }: {data: data}) {
+export default function BalanceCard({ data }: {data: Account}) {
 
     const classes = useStyles();
 
@@ -50,47 +40,35 @@ export default function BalanceCard({ data }: {data: data}) {
             <CardContent>
                 {/* -------------- Header ----------- */}
                 <Typography variant="subtitle2">
-                    {data.title}
+                    {data?.description ?? <Link style={{ textDecoration: 'none' }} color="primary" to={urls.app.main.account.form}>Nueva cuenta</Link>}
                 </Typography>
                 <Divider />
                 <Typography
                 variant={
                     // if the value is too big this code reduces the font size
-                    data.value.length <= 9 ? "h3" : "h4"
+                    "h4"
                 }
-                color="primary"
+                color={
+                    // if the value is negative this code changes the font color
+                    Number(data?.balance) >= 0
+                        ? "primary"
+                        : "secondary"
+                }
                 className={classes.cardBody}
                 >
-                    {data.value}
+                    {Utils.formatNumber(data?.balance ?? 0)}
                     <span className={classes.cardPrefix}>
-                        {data.prefix}
+                        $
                     </span>
                 </Typography>
 
-                {/*This section has the code for porcent respect previous month */}
-                <Tooltip title={data.percent.tooltip}>
+                <Tooltip style={{ marginTop: '2vh' }} title={data?.description ?? ''}>
                     <Typography
                         align="right"
-                        variant="subtitle1"
-                        color={
-                        // if the value is negative this code changes the font color
-                        data.percent.value >= 0
-                            ? "primary"
-                            : "secondary"
-                        }
+                        variant="subtitle2"
+                        color="primary"
                     >
-                        {
-                        // if the value is negative this code changes the icon
-                        data.percent.value >= 0 ? (
-                            <ArrowUpwardIcon className={classes.cardPorcent} />
-                        ) : (
-                            <ArrowDownwardIcon className={classes.cardPorcent} />
-                        )
-                        }{" "}
-                        {data.percent.value}{" "}
-                        <span className={classes.cardPorcent}>
-                        {data.percent.prefix}
-                        </span>
+                        {data?.account ?? 0}
                     </Typography>
                 </Tooltip>
             </CardContent>
