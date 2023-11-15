@@ -20,6 +20,7 @@ import DailyReportForm from './DailyReport/DailyReportForm'
 import { Account } from '../../../schemas/Account'
 import AccountService from '../../../services/Account'
 import { ServerError } from '../../../schemas/Error'
+import permissions from '../../../permissions.json'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -115,12 +116,15 @@ export default function IndexApp() {
   React.useEffect(() => {
     async function loadData() {
       try {
-        const accountService = new AccountService()
-        const accountRes = await accountService.getAccounts(userContext.token ?? '')
-        setState({
-          ...state,
-          accounts: accountRes.accounts
-        })
+        const hasPermission = userContext.permissions.some(permission => permission === permissions.account.view)
+        if (hasPermission) {
+          const accountService = new AccountService()
+          const accountRes = await accountService.getAccounts(userContext.token ?? '')
+          setState({
+            ...state,
+            accounts: accountRes.accounts
+          })
+        }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           const serverError = error as AxiosError<ServerError>
