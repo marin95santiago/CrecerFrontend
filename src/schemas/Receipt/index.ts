@@ -25,6 +25,7 @@ export interface Receipt {
   thirdDocument: string
   totalValueLetter: string
   total: number
+  status?: string
   accounts: AccountReceipt[]
   concepts: ConceptReceipt[]
 }

@@ -1,3 +1,4 @@
+import { CostCenter } from "../../schemas/CostCenter";
 import { AccountReceipt, ConceptReceipt, Receipt } from "../../schemas/Receipt";
 import { DailyReportReceipt } from "../../schemas/Receipt/dailyReport.schema";
 
@@ -29,6 +30,42 @@ export function createConcepts(data: any[]): ConceptReceipt[] {
   return res
 }
 
+export function createAccountsForForm(data: AccountReceipt[], costCenters: CostCenter[]): any[] {
+  const res: any[] = []
+  data.forEach((item: AccountReceipt) => {
+    const costCenter = costCenters.find(cc => cc.code === item.costCenterCode)
+    res.push({
+      account: Number(item.account),
+      value: Math.abs(Number(item.value)),
+      description: item.description,
+      costCenter: {
+        description: costCenter?.description,
+        code: item.costCenterCode
+      }
+    })
+  })
+
+  return res
+}
+
+export function createConceptsForForm(data: ConceptReceipt[], costCenters: CostCenter[]): any[] {
+  const res: any[] = []
+  data.forEach((item: any) => {
+    const costCenter = costCenters.find(cc => cc.code === item.costCenterCode)
+    res.push({
+      account: Number(item.account),
+      value: Math.abs(Number(item.value)),
+      description: item.description,
+      costCenter: {
+        description: costCenter?.description,
+        code: item.costCenterCode
+      }
+    })
+  })
+
+  return res
+}
+
 export function receiptMapper(item: any | unknown): Receipt {
   return {
     entityId: item.entityId ?? '',
@@ -42,6 +79,7 @@ export function receiptMapper(item: any | unknown): Receipt {
     description: item.description ?? '',
     thirdDocument: item.thirdDocument ?? '',
     totalValueLetter: item.totalValueLetter ?? '',
+    status: item.status ?? '',
     total: Number(item.total) ?? 0,
     accounts: createAccounts(item.accounts),
     concepts: createConcepts(item.concepts)

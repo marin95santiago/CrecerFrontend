@@ -120,7 +120,8 @@ export default function ReceiptPrint() {
           <div>
             <h4>
               RECIBO DE {state.receipt?.type?.description.toUpperCase()} <br/>
-              SERIAL: {state.receipt?.code}
+              SERIAL: {state.receipt?.code} <br/>
+              {state.receipt?.date}
             </h4>
 
           </div>

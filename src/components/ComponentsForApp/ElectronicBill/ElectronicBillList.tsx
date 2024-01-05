@@ -176,7 +176,7 @@ export default function ElectronicBillList() {
   React.useEffect(() => {
     async function loadData() {
       const electronicBillService= new ElectronicBillService()
-      const response = await electronicBillService.getElectronicBills(userContext.token || '', { limit: 5 })
+      const response = await electronicBillService.getElectronicBills(userContext.token || '', { limit: 10 })
       setState({
         ...state,
         electronicBills: response.electronicBills.map((bill: any) =>{
@@ -196,7 +196,7 @@ export default function ElectronicBillList() {
   const onLoadMore = async () => {
     try {
       const electronicBillService= new ElectronicBillService()
-      const response = await electronicBillService.getElectronicBills(userContext.token || '', { limit: 5, lastEvaluatedKey: state.lastEvaluatedKey })
+      const response = await electronicBillService.getElectronicBills(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
       const newBills = response.electronicBills.map((bill: any) =>{
         return {
           ...bill,
