@@ -50,6 +50,7 @@
   "receipt":{
     "view": "receipt_view",
     "create": "receipt_create",
-    "update": "receipt_update"
+    "update": "receipt_update",
+    "cancel": "receipt_cancel"
   }
 }

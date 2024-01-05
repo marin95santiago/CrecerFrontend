@@ -18,6 +18,20 @@ class ReceiptService {
     }
   }
 
+  async updateReceipt(receiptData: Receipt, token: string) {
+    try {
+      const url = `${process.env.REACT_APP_API}/api/v2/receipt` 
+      const responseApi = await axios.put(url, receiptData, {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      })
+      return responseApi.data
+    } catch (error) {
+      throw error
+    }
+  }
+
 
   async getReceiptByCode(token: string, code: string) : Promise<Receipt> {
     try {
@@ -76,6 +90,24 @@ class ReceiptService {
 
       return report
 
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async cancelReceipt(token: string, code: string) : Promise<Receipt> {
+    try {
+      let url = `${process.env.REACT_APP_API}/api/v2/receipt/cancel?code=${code}`
+  
+      const responseApi = await axios.get(url, {
+        headers: {
+          authorization: `Bearer ${token}`
+        } 
+      })
+
+      const concept = receiptMapper(responseApi.data) 
+
+      return concept
     } catch (error) {
       throw error
     }

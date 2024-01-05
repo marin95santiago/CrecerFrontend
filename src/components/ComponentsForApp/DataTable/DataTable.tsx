@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { DataGrid, GridColDef, GridCellEditCommitParams, GridValueGetterParams } from '@material-ui/data-grid'
+import { DataGrid, GridColDef, GridCellEditCommitParams } from '@material-ui/data-grid'
 
 interface Props {
   keyId: string
@@ -19,12 +19,12 @@ export default function DataTable(props: Props) {
   }
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 600, width: '100%' }}>
       <DataGrid
         rows={props.rows}
         columns={props.columns}
         getRowId={(row: any) => row[props.keyId]}
-        pageSize={5}
+        pageSize={10}
         onCellEditCommit={(params: GridCellEditCommitParams) => onGridEdit(params)}
       />
     </div>

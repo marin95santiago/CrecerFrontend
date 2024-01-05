@@ -30,7 +30,7 @@ import EntityContext from '../../../contexts/Entity'
 import { EntityContextType, ReceiptNumbers } from '../../../schemas/Entity'
 import DataTableReceipt from './DataTableReceipt'
 import AccountService from '../../../services/Account'
-import { createAccounts, createConcepts } from '../../../mappers/Receipt/receipt.mapper'
+import { createAccounts, createAccountsForForm, createConcepts, createConceptsForForm } from '../../../mappers/Receipt/receipt.mapper'
 import ReceiptService from '../../../services/Receipt'
 import { urls } from '../../../urls'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -38,6 +38,7 @@ import { CostCenter } from '../../../schemas/CostCenter'
 import CostCenterService from '../../../services/CostCenter'
 import ThirdsContext from '../../../contexts/Third'
 import { ThirdsContextType } from '../../../schemas/Third'
+import Utils from '../../../utils'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -169,6 +170,8 @@ interface State {
   status: boolean
   thirdSelected?: string
   loading: boolean
+  isEdit: boolean
+  documentToEdit: string
   disabledForm: boolean
 }
 
@@ -201,6 +204,8 @@ const initState: State = {
   thirdSelected: '',
   status: false,
   loading: false,
+  isEdit: false,
+  documentToEdit: '',
   disabledForm: false
 }
 
@@ -231,6 +236,8 @@ export default function ReceiptForm() {
         loading: true
       })
 
+      const document = Utils.getCodeFromUrl(search)
+
       try {
         // get thirds
         const thirdService = new ThirdService()
@@ -254,18 +261,51 @@ export default function ReceiptForm() {
         const costCenterRes = await costCenterService.getCostCenters(userContext.token || '')
         const costCenters = costCenterRes.costCenters
 
-        setState({
-          ...state,
-          thirds,
-          selectedAccounts: [],
-          selectedConcepts: [],
-          suggestionsThirds: thirds,
-          conceptList: concepts,
-          accountList: accounts,
-          costCenterList: costCenters,
-          prefix: entityContext.receiptNumbers ?? [],
-          loading: false
-        })
+        if (document) { // Edition
+          const receiptService = new ReceiptService()
+          const receipt = await receiptService.getReceiptByCode(userContext.token || '', document)
+          let thirdSelected = ''
+          thirds.forEach(third => {
+            if (third.document === receipt.thirdDocument) {
+              thirdSelected = third.name !== undefined ? `${third.name} ${third.lastname}` : `${third.businessName}`
+            }
+          })
+          setState({
+            ...state,
+            form: {
+              ...receipt,
+              code: receipt.code.slice(0, 2)
+            },
+            conceptTotal: receipt.total,
+            accountTotal: receipt.total,
+            selectedAccounts: createAccountsForForm(receipt.accounts, costCenters),
+            selectedConcepts: createConceptsForForm(receipt.concepts, costCenters),
+            thirdSelected,
+            thirds,
+            suggestionsThirds: thirds,
+            conceptList: concepts,
+            accountList: accounts,
+            costCenterList: costCenters,
+            prefix: entityContext.receiptNumbers ?? [],
+            loading: false,
+            isEdit: true,
+            documentToEdit: document
+          })
+        } else { // New receipt
+          setState({
+            ...state,
+            thirds,
+            selectedAccounts: [],
+            selectedConcepts: [],
+            suggestionsThirds: thirds,
+            conceptList: concepts,
+            accountList: accounts,
+            costCenterList: costCenters,
+            prefix: entityContext.receiptNumbers ?? [],
+            loading: false
+          })
+        }
+
       } catch (error) {
         setState({
           ...state,
@@ -462,12 +502,19 @@ export default function ReceiptForm() {
       const concepts = createConcepts(state.selectedConcepts)
       const receipt = {
         ...state.form,
+        code: state.isEdit ? state.documentToEdit : state.form.code,
         accounts,
         concepts
       }
 
       const receiptService = new ReceiptService()
-      const receiptCreated = await receiptService.saveReceipt(receipt, userContext.token ?? '')
+      let receiptCreated: any = {}
+
+      if (state.isEdit) {
+        receiptCreated = await receiptService.updateReceipt(receipt, userContext.token ?? '')
+      } else {
+        receiptCreated = await receiptService.saveReceipt(receipt, userContext.token ?? '')
+      }
 
       setState({
         ...initState,
@@ -482,7 +529,7 @@ export default function ReceiptForm() {
       })
   
       history.push(urls.app.main.receipt.form)
-      return toast.success(`El comprobante ${receiptCreated.code} fue creado con éxito`)
+      return toast.success(`El comprobante ${receiptCreated.code ?? ''} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
 
     } catch (error) {
       if (axios.isAxiosError(error)) {
