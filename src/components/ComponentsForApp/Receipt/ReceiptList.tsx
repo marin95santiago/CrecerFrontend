@@ -13,7 +13,7 @@ import {
   CircularProgress
 } from '@material-ui/core'
 import { GridColDef } from '@material-ui/data-grid'
-import { CloudDownload, Edit } from '@material-ui/icons'
+import { CloudDownload, Edit, Block } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
@@ -23,6 +23,7 @@ import permissions from '../../../permissions.json'
 import ReceiptService from '../../../services/Receipt'
 import ThirdsContext from '../../../contexts/Third'
 import { ThirdsContextType } from '../../../schemas/Third'
+import CancelModal from './CancelModal'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -75,37 +76,58 @@ const columns: GridColDef[] = [
   {
     field: 'code',
     headerName: 'Código',
-    flex: 1,
+    width: 150,
     editable: false,
+    renderCell: (params: any) => (
+      <RenderCell params={params} field='code' />
+    )
+  },
+  {
+    field: 'status',
+    headerName: 'Estado',
+    hide: true
   },
   {
     field: 'date',
     headerName: 'Fecha',
     editable: false,
-    flex: 1
+    width: 150,
+    renderCell: (params: any) => (
+      <RenderCell params={params} field='date' />
+    )
   },
   {
     field: 'description',
     headerName: 'Detalle',
     editable: false,
-    flex: 2
+    width: 300,
+    renderCell: (params: any) => (
+      <RenderCell params={params} field='description' />
+    )
   },
   {
     field: 'thirdName',
     headerName: 'Tercero',
     editable: false,
-    flex: 2
+    width: 250,
+    renderCell: (params: any) => (
+      <RenderCell params={params} field='thirdName' />
+    )
   },
   {
     field: 'total',
     headerName: 'Total',
     editable: false,
-    flex: 1
+    align: 'right',
+    width: 200,
+    renderCell: (params: any) => (
+      <RenderCell params={params} field='total' />
+    )
   },
   {
     field: 'actions',
     headerName: 'Acciones',
-    flex: 1,
+    width: 150,
     type: 'actions',
     renderCell: (params: any) => (
       <ActionButtons params={params} />
@@ -127,21 +149,38 @@ const initState: State = {
   loading: true
 }
 
+function RenderCell(props: any) {
+  return (
+    <div className={props.params.row.status === 'VALID' ? '' : 'cell-red'}>
+      {props.params.row[props.field]}
+    </div>
+  )
+}
+
 function ActionButtons(props: any) {
 
   const history = useHistory()
   const [editPermission, setEditPermission] = useState<boolean>(false)
+  const [cancelPermission, setCancelPermission] = useState<boolean>(false)
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
 
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
 
   React.useEffect(() => {
-    setEditPermission(userContext.permissions.some(permission => permission === permissions.receipt.update))
-  }, [userContext])
+    const cancelAvailable = (userContext.permissions.some(permission => permission === permissions.receipt.cancel) && props.params.row.status === 'VALID')
+    // The receipt needs are valid for edition
+    setEditPermission(userContext.permissions.some(permission => permission === permissions.receipt.update) && props.params.row.status === 'VALID')
+    setCancelPermission(cancelAvailable)
+  }, [userContext, props])
 
   const onEdit = () => {
     history.push(`${urls.app.main.receipt.form}?code=${props.params.row.code ?? ''}`)
+  }
+
+  const handleModal = (show: boolean) => {
+    setShowCancelModal(show)
   }
 
   const onDownload = () => {
@@ -151,7 +190,6 @@ function ActionButtons(props: any) {
   return (
     <React.Fragment>
       <IconButton
-        type="submit"
         onClick={() => onEdit()}
         disabled={!editPermission}
       >
@@ -159,16 +197,24 @@ function ActionButtons(props: any) {
       </IconButton>
 
       <IconButton
-        type="submit"
+        onClick={() => handleModal(true)}
+        disabled={!cancelPermission}
+      >
+        <Block fontSize={"small"} color={cancelPermission ? "error" : "inherit"} />
+      </IconButton>
+
+      <IconButton
         onClick={() => onDownload()}
       >
         <CloudDownload fontSize={"small"} color="action" />
       </IconButton>
+
+      <CancelModal show={showCancelModal} code={props.params.row.code} handleModal={handleModal} />
     </React.Fragment>
   )
 }
 
-export default function ItemList() {
+export default function ReceiptList() {
 
   const classes = useStyles()
 
@@ -185,7 +231,7 @@ export default function ItemList() {
   React.useEffect(() => {
     async function loadData() {
       const receiptService = new ReceiptService()
-      const response = await receiptService.getReceipts(userContext.token || '', { limit: 5 })
+      const response = await receiptService.getReceipts(userContext.token || '', { limit: 10 })
       setState({
         ...state,
         receipts: response.receipts.map(receipt => {
@@ -206,7 +252,7 @@ export default function ItemList() {
   const onLoadMore = async () => {
     try {
       const receiptService = new ReceiptService()
-      const response = await receiptService.getReceipts(userContext.token || '', { limit: 5, lastEvaluatedKey: state.lastEvaluatedKey })
+      const response = await receiptService.getReceipts(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
       const receipts = response.receipts.map(receipt => {
         const third = thirdsContext.find(third => third.document === receipt.thirdDocument)
         return {
