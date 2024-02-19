@@ -12,7 +12,6 @@ import {
   InsertChart,
   Assignment,
   Keyboard,
-  ImportExport,
   Contacts,
   FindInPage,
   ExpandLess,
@@ -131,6 +130,13 @@ const initState = {
               permission: permissions.account.view,
               url: urls.app.main.account.list
             },
+            {
+              id: '002-03',
+              title: 'Transferencia entre cuentas',
+              icon: <Assignment />,
+              permission: permissions.account.transfer,
+              url: urls.app.main.account.transferForm
+            }
           ]
         }
       },
@@ -243,13 +249,6 @@ const initState = {
       },
       {
         id: '007',
-        title: 'Transacciones internas',
-        icon: <ImportExport />,
-        permission: permissions.movement_internal.view,
-        url: urls.app.main.internalTransaction.form
-      },
-      {
-        id: '008',
         title: 'Productos',
         icon: <QueueRounded/>,
         permission: permissions.item.view,
@@ -257,14 +256,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '008-01',
+              id: '007-01',
               title: 'Creación de productos',
               icon: <QueueRounded />,
               permission: permissions.item.create,
               url: urls.app.main.item.form
             },
             {
-              id: '008-02',
+              id: '007-02',
               title: 'Listar productos',
               icon: <ListIcon/>,
               permission: permissions.item.view,
@@ -274,7 +273,7 @@ const initState = {
         }
       },
       {
-        id: '009',
+        id: '008',
         title: 'Factura electrónica',
         icon: <Description/>,
         permission: permissions.electronic_bill.view,
@@ -282,14 +281,14 @@ const initState = {
           open: false,
           items: [
             {
-              id: '009-01',
+              id: '008-01',
               title: 'Crear factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
               url: urls.app.main.electronicBill.form
             },
             {
-              id: '009-02',
+              id: '008-02',
               title: 'Listar factura electrónica',
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
@@ -299,18 +298,11 @@ const initState = {
         }
       },
       {
-        id: '010',
+        id: '009',
         title: 'Reporte de recibos',
         icon: <FindInPage />,
         permission: permissions.movement_receipt.view,
         url: urls.app.main.receipt.report
-      },
-      {
-        id: '011',
-        title: 'Reporte de transacciones',
-        icon: <Assignment />,
-        permission: permissions.movement_internal.view,
-        url: urls.app.main.internalTransaction.report
       }
     ]
   }
