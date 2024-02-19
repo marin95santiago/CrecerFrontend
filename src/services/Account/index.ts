@@ -1,6 +1,7 @@
 import axios from 'axios'
 import accountMapper from '../../mappers/Account/account.mapper'
 import { Account } from '../../schemas/Account'
+import { TransferBetweenAccount } from '../../schemas/TransferBetweenAccount'
 
 class AccountService {
   async saveAccount(account: Account, token: string) {
@@ -69,6 +70,20 @@ class AccountService {
         accounts: accounts
       }
 
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async transferBetweenAccount(transfer: TransferBetweenAccount, token: string) {
+    try {
+      const url = `${process.env.REACT_APP_API}/api/v2/account/transfer` 
+      const responseApi = await axios.post(url, transfer, {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      })
+      return responseApi.data
     } catch (error) {
       throw error
     }
