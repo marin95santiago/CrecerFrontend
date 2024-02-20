@@ -14,7 +14,8 @@ export const urls = {
         },
         account: {
           form: '/app/account/form',
-          list: '/app/account/list'
+          list: '/app/account/list',
+          transferForm: '/app/account/transfer/form'
         },
         concept: {
           form: '/app/concept/form',

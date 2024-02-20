@@ -45,7 +45,8 @@
   "account":{
     "view": "account_view",
     "create": "account_create",
-    "update": "account_update"
+    "update": "account_update",
+    "transfer": "account_transfer"
   },
   "receipt":{
     "view": "receipt_view",
