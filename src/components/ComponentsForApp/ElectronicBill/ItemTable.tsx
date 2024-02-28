@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Utils from '../../../utils';
 
 // -------------- Styles --------------
 const useStyles = makeStyles({
@@ -55,7 +56,7 @@ export default function ItemTable({ rows, handleTable, disabledForm }: { rows: A
               <TableRow key={index}>
                 <TableCell component="th" >{row.code}</TableCell>
                 <TableCell component="th">{row.description}</TableCell>
-                <TableCell align="right">{row.price}</TableCell>
+                <TableCell align="right">{Utils.formatNumber(row.price)}</TableCell>
                 <TableCell align="right">{row.quantity}</TableCell>
                 <TableCell align="right">
                   <IconButton

@@ -494,6 +494,7 @@ export default function ReceiptForm() {
     e.preventDefault()
     try {
       // validations
+      if (!state.form.thirdDocument || state.form.thirdDocument === "") throw new Error('Debe seleccionar un tercero del listado')
       if (state.selectedAccounts.length === 0) throw new Error('Debe seleccionar al menos una cuenta')
       if (state.selectedConcepts.length === 0) throw new Error('Debe seleccionar al menos un concepto')
       if (Number(state.accountTotal) !== Number(state.conceptTotal)) throw new Error('Los valores totales de las cuentas y conceptos no concuerdan')
@@ -923,7 +924,7 @@ export default function ReceiptForm() {
           {/* ----- Form: item **total ------*/}
           <Grid item md={4} sm={4} xs={6}>
             <Typography variant="h6">
-              <span>Total: </span>$ {state.form.total}
+              <span>Total: </span>$ {Utils.formatNumber(state.form.total)}
             </Typography>
           </Grid>
 

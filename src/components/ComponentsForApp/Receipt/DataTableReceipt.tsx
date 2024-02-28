@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Utils from '../../../utils'
 
 // -------------- Styles --------------
 const useStyles = makeStyles({
@@ -56,7 +57,7 @@ export default function DataTableReceipt({ rows, handleTable, disabledForm }: { 
                 <TableCell component="th" >{row.account}</TableCell>
                 <TableCell component="th">{row.description}</TableCell>
                 <TableCell component="th">{row.costCenter.description}</TableCell>
-                <TableCell align="right">{row.value}</TableCell>
+                <TableCell align="right">{Utils.formatNumber(Number(row.value))}</TableCell>
                 <TableCell align="right">
                   <IconButton
                     aria-label="delete"
