@@ -483,6 +483,8 @@ export default function ElectronicBillForm() {
     })
 
     try {
+      // Validations
+      if (!state.form.third) throw new Error('Debe seleccionar un tercero del listado')
       const res = ElectronicBillMapper.formToSchema(state.form, state.selectedItems)
       const electronicBillService = new ElectronicBillService()
       const plemsiService = new PlemsiService()
@@ -512,6 +514,8 @@ export default function ElectronicBillForm() {
         if (serverError && serverError.response) {
           return toast.error(serverError.response.data.message || error.toString())
         }
+      } else if (error instanceof Error) {
+        return toast.error(error.message)
       }
     }
   }
@@ -959,9 +963,8 @@ export default function ElectronicBillForm() {
             <TextField
               disabled={true}
               name={texts.body.field.total.name}
-              value={state.form.total}
+              value={Utils.formatNumber(state.form.total)}
               variant='outlined'
-              type='number'
               fullWidth
               onChange={handleChange}
               helperText={texts.body.field.total.helperText}
@@ -974,9 +977,8 @@ export default function ElectronicBillForm() {
             <TextField
               disabled={true}
               name={texts.body.field.totalTaxes.name}
-              value={state.form.totalTaxes}
+              value={Utils.formatNumber(state.form.totalTaxes)}
               variant='outlined'
-              type='number'
               fullWidth
               onChange={handleChange}
               helperText={texts.body.field.totalTaxes.helperText}
@@ -989,9 +991,8 @@ export default function ElectronicBillForm() {
             <TextField
               disabled={true}
               name={texts.body.field.totalToPay.name}
-              value={state.form.totalToPay}
+              value={Utils.formatNumber(state.form.totalToPay)}
               variant='outlined'
-              type='number'
               fullWidth
               onChange={handleChange}
               helperText={texts.body.field.totalToPay.helperText}
