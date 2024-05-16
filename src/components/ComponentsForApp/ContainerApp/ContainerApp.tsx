@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { urls } from '../../../urls'
 import MainMenu from '../MainMenu/MainMenu'
 import AppBarComponent from '../AppBar/AppBarComponent'
@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export default function ContainerApp() {
-
   const classes = useStyles()
 
   return (
@@ -63,108 +62,127 @@ export default function ContainerApp() {
           {
             // This proyect uses the url.sts file to manage the urls
           }
-          <Switch>
-            <Route path={urls.app.main.home}>
+          <Routes>
+            <Route index path={urls.app.main.home} element={
               <ProtectRoute>
                 <IndexApp />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.account.form}>
+            } />
+            <Route index path={urls.app.main.account.form} element={
               <ProtectRoute>
                 <AccountForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.account.list}>
+            }/>
+
+            <Route path={urls.app.main.account.list} element={
               <ProtectRoute>
                 <AccountList />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.account.transferForm}>
+            }/>
+
+            <Route path={urls.app.main.account.transferForm} element={
               <ProtectRoute>
                 <TransferBetweenAccountForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.third.form}>
+            }/>
+
+            <Route path={urls.app.main.third.form} element={
               <ProtectRoute>
                 <ThirdForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.third.list}>
+            }/>
+
+            <Route path={urls.app.main.third.list} element={
               <ProtectRoute>
                 <ThirdList />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.third.thirdMigrationForm}>
+            }/>
+              
+            <Route path={urls.app.main.third.thirdMigrationForm} element={
               <ProtectRoute>
                 <ThirdMigration />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.concept.form}>
+            }/>
+
+            <Route path={urls.app.main.concept.form} element={
               <ProtectRoute>
                 <ConceptForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.concept.list}>
+            }/>
+
+            <Route path={urls.app.main.concept.list} element={
               <ProtectRoute>
                 <ConceptList />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.costCenter.form}>
+            }/>
+
+            <Route path={urls.app.main.costCenter.form} element={
               <ProtectRoute>
                 <CostCenterForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.costCenter.list}>
+            }/>
+
+            <Route path={urls.app.main.costCenter.list} element={
               <ProtectRoute>
                 <CostCenterList />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.item.form}>
+            }/>
+
+            <Route path={urls.app.main.item.form} element={
               <ProtectRoute>
                 <ItemForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.item.list}>
+            }/>
+
+            <Route path={urls.app.main.item.list} element={
               <ProtectRoute>
                 <ItemList />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.receipt.form}>
+            }/>
+
+            <Route path={urls.app.main.receipt.form} element={
               <ProtectRoute>
                 <ReceiptForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.receipt.list}>
+            }/>
+              
+            
+            <Route path={urls.app.main.receipt.list} element={
               <ProtectRoute>
                 <ReceiptList />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.receipt.print}>
+            }/>
+
+            <Route path={urls.app.main.receipt.print} element={
               <ProtectRoute>
                 <ReceiptPrint />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.receipt.print_daily_report}>
+            }/>
+
+            <Route path={urls.app.main.receipt.print_daily_report} element={
               <ProtectRoute>
                 <DailyReportPrint />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.electronicBill.form}>
+            }/>
+              
+            <Route path={urls.app.main.electronicBill.form} element={
               <ProtectRoute>
                 <ElectronicBillForm />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.electronicBill.list}>
+            }/>
+            
+            <Route path={urls.app.main.electronicBill.list} element={
               <ProtectRoute>
                 <ElectronicBillList />
               </ProtectRoute>
-            </Route>
-            <Route path={urls.app.main.receipt.report}>
+            }/>
+            
+            <Route path={urls.app.main.receipt.report} element={
               <ProtectRoute>
                 <CashReceiptReport />
               </ProtectRoute>
-            </Route>
-          </Switch>
+            }/>
+          </Routes>
         </div>
       </div>
     </div>

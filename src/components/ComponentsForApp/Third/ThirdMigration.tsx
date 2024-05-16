@@ -111,7 +111,6 @@ export default function ThirdMigration() {
     // the form to redux (redux send the info to backend)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(form);
     }
 
     return (
