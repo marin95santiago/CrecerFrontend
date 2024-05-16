@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -119,15 +120,12 @@ const initState: State = {
 }
 
 function ActionButtons(props: any) {
-
-  const history = useHistory()
-
   const onView = () => {
-    history.push(`${urls.app.main.electronicBill.form}?number=${props.params.row.number ?? ''}`)
+    redirect(`${urls.app.main.electronicBill.form}?number=${props.params.row.number ?? ''}`)
   }
 
   const onCopy = () => {
-    history.push(`${urls.app.main.electronicBill.form}?number=${props.params.row.number ?? ''}&copy=true`)
+    redirect(`${urls.app.main.electronicBill.form}?number=${props.params.row.number ?? ''}&copy=true`)
   }
 
   const onDownload = () => {

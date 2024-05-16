@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
@@ -18,7 +19,7 @@ import { Cancel, NoteAdd } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
-import { useHistory, useLocation } from 'react-router-dom'
+import { redirect, useLocation } from 'react-router-dom'
 import { urls } from '../../../urls'
 import Utils from '../../../utils'
 import CostCenterService from '../../../services/CostCenter'
@@ -112,8 +113,7 @@ export default function CostCenterForm() {
 
   const classes = useStyles()
   const { search } = useLocation()
-  const history = useHistory()
-
+  
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
     UserContext
@@ -185,7 +185,7 @@ export default function CostCenterForm() {
       }
 
       setState(initState)
-      history.push(urls.app.main.costCenter.form)
+      redirect(urls.app.main.costCenter.form)
       return toast.success(`El centro de costo ${costCenterCreated.code} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
