@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -159,7 +158,8 @@ function RenderCell(props: any) {
 }
 
 function ActionButtons(props: any) {
-  const navigate = useNavigate()
+
+  const history = useHistory()
   const [editPermission, setEditPermission] = useState<boolean>(false)
   const [cancelPermission, setCancelPermission] = useState<boolean>(false)
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
@@ -176,7 +176,7 @@ function ActionButtons(props: any) {
   }, [userContext, props])
 
   const onEdit = () => {
-    navigate(`/${urls.app.index}/${urls.app.main.receipt.form}?code=${props.params.row.code ?? ''}`)
+    history.push(`${urls.app.main.receipt.form}?code=${props.params.row.code ?? ''}`)
   }
 
   const handleModal = (show: boolean) => {

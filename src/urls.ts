@@ -1,48 +1,48 @@
 export const urls = {
     page: {
-      home: '/',
-      login: '/login'
+      home: '/page',
+      login: '/page/login'
     },
     app: {
-      index: 'app',
+      index: '/app',
       main: {
-        home: 'home',
+        home: '/app/home',
         third: {
-          form: 'third/form',
-          thirdMigrationForm: 'third/migration/form',
-          list: 'third/list'
+          form: '/app/third/form',
+          thirdMigrationForm: '/app/third/migration/form',
+          list: '/app/third/list'
         },
         account: {
-          form: 'account/form',
-          list: 'account/list',
-          transferForm: 'account/transfer/form'
+          form: '/app/account/form',
+          list: '/app/account/list',
+          transferForm: '/app/account/transfer/form'
         },
         concept: {
-          form: 'concept/form',
-          list: 'concept/list'
+          form: '/app/concept/form',
+          list: '/app/concept/list'
         },
         costCenter: {
-          form: 'cost-center/form',
-          list: 'cost-center/list'
+          form: '/app/cost-center/form',
+          list: '/app/cost-center/list'
         },
         receipt: {
-          form: 'receipt/form',
-          list: 'receipt/list',
-          report: 'cash-receipt/report',
-          print: 'receipt/print',
-          print_daily_report: 'receipt/print-daily-report'
+          form: '/app/receipt/form',
+          list: '/app/receipt/list',
+          report: '/app/cash-receipt/report',
+          print: '/app/receipt/print',
+          print_daily_report: '/app/receipt/print-daily-report'
         },
         electronicBill: {
-          form: 'electronic-bill/form',
-          list: 'electronic-bill/list'
+          form: '/app/electronic-bill/form',
+          list: '/app/electronic-bill/list'
         },
         internalTransaction: {
-          form: 'internal-transaction/form',
-          report: 'internal-transaction/report'
+          form: '/app/internal-transaction/form',
+          report: '/app/internal-transaction/report'
         },
         item: {
-          form: 'item/form',
-          list: 'item/list'
+          form: '/app/item/form',
+          list: '/app/item/list'
         }
       }
     }
