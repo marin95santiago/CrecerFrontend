@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -116,14 +115,14 @@ const initState: State = {
 }
 
 function ActionButtons(props: any) {
-  const navigate = useNavigate()
   const [editPermission, setEditPermission] = useState<boolean>(false)
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
+  const history = useHistory()
 
   const onEdit = () => {
-    navigate(`/${urls.app.index}/${urls.app.main.concept.form}?account=${props.params.row.account ?? ''}`)
+    history.push(`${urls.app.main.concept.form}?account=${props.params.row.account ?? ''}`)
   }
 
   React.useEffect(() => {
@@ -153,7 +152,7 @@ export default function ConceptList() {
   React.useEffect(() => {
     async function loadData() {
       const conceptService = new ConceptService()
-      const response = await conceptService.getConcepts(userContext.token || '', { limit: 10 })
+      const response = await conceptService.getConcepts(userContext.token || '', { limit: 5 })
       const responseParsed = response.concepts.map((concept: Concept) => {
         return {
           ...concept,
@@ -174,7 +173,7 @@ export default function ConceptList() {
   const onLoadMore = async () => {
     try {
       const conceptService = new ConceptService()
-      const response = await conceptService.getConcepts(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
+      const response = await conceptService.getConcepts(userContext.token || '', { limit: 5, lastEvaluatedKey: state.lastEvaluatedKey })
       const responseParsed = response.concepts.map((concept: Concept) => {
         return {
           ...concept,

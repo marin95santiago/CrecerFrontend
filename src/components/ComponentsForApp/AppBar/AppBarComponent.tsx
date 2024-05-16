@@ -1,5 +1,5 @@
 import React from 'react'
-import { redirect } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { fade, makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function AppBarComponent() {
   const classes = useStyles()
+  const history = useHistory()
   const { setUserContext } = React.useContext(
     UserContext
   ) as UserContextType
@@ -103,7 +104,7 @@ export default function AppBarComponent() {
     handleMobileMenuClose()
     setUserContext(initialContextUserState)
     Utils.removeCookieAuth()
-    redirect(urls.page.login)
+    history.push(urls.page.login)
   }
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

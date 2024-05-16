@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import { toast } from 'react-toastify'
-import { redirect } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import {
   Divider,
@@ -99,7 +98,10 @@ const initState: State = {
 }
 
 export default function TransferBetweenAccountForm() {
+
   const classes = useStyles()
+  const history = useHistory()
+
   const [state, setState] = useState<State>(initState)
 
   const { userContext } = React.useContext(
@@ -184,7 +186,7 @@ export default function TransferBetweenAccountForm() {
         accounts: state.accounts
       })
 
-      redirect(urls.app.main.account.transferForm)
+      history.push(urls.app.main.account.transferForm)
       return toast.success(`La transferencia ${transferCreated.code} fue creada con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
