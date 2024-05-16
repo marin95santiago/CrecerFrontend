@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import axios, { AxiosError } from 'axios'
@@ -33,7 +34,7 @@ import AccountService from '../../../services/Account'
 import { createAccounts, createAccountsForForm, createConcepts, createConceptsForForm } from '../../../mappers/Receipt/receipt.mapper'
 import ReceiptService from '../../../services/Receipt'
 import { urls } from '../../../urls'
-import { useHistory, useLocation } from 'react-router-dom'
+import { redirect, useLocation } from 'react-router-dom'
 import { CostCenter } from '../../../schemas/CostCenter'
 import CostCenterService from '../../../services/CostCenter'
 import ThirdsContext from '../../../contexts/Third'
@@ -210,10 +211,8 @@ const initState: State = {
 }
 
 export default function ReceiptForm() {
-
   const classes = useStyles()
   const { search } = useLocation()
-  const history = useHistory()
 
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
@@ -384,6 +383,7 @@ export default function ReceiptForm() {
   const handleSuggestions = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
 
+    // eslint-disable-next-line array-callback-return
     const suggestionsThirds = state.thirds.filter(third => {
       if (third.name?.toLowerCase().includes(value.toLowerCase())) {
         return third
@@ -529,7 +529,7 @@ export default function ReceiptForm() {
         loading: false
       })
   
-      history.push(urls.app.main.receipt.form)
+      redirect(urls.app.main.receipt.form)
       return toast.success(`El comprobante ${receiptCreated.code ?? ''} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
 
     } catch (error) {
@@ -767,11 +767,7 @@ export default function ReceiptForm() {
               disabled={state.disabledForm}
             >
               {
-                state.costCenterList.filter(costCenter => {
-                  if (costCenter.type.code === 'PAY') {
-                    return costCenter
-                  }
-                }).map((cc) =>
+                state.costCenterList.filter(costCenter => costCenter.type.code === 'PAY').map((cc) =>
                   <MenuItem
                     key={cc.description}
                     value={cc.code}
@@ -841,11 +837,13 @@ export default function ReceiptForm() {
             >
               {
                 state.conceptList.filter(concept => {
+                  let res = false
                   if (state.form.type?.code === 'ING' && concept.type.code === 'CREDIT') {
-                    return concept
+                    res = true
                   } else if (state.form.type?.code === 'EGR' && concept.type.code === 'DEBIT') {
-                    return concept
+                    res = true
                   }
+                  return res
                 }).map((concept) =>
                   <MenuItem
                     key={concept.description}
@@ -869,11 +867,7 @@ export default function ReceiptForm() {
               disabled={state.disabledForm}
             >
               {
-                state.costCenterList.filter(costCenter => {
-                  if (costCenter.type.code === 'CONCEPT') {
-                    return costCenter
-                  }
-                }).map((cc) =>
+                state.costCenterList.filter(costCenter => costCenter.type.code === 'CONCEPT').map((cc) =>
                   <MenuItem
                     key={cc.description}
                     value={cc.code}

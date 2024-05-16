@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
@@ -21,7 +22,7 @@ import { UserContextType } from '../../../schemas/User'
 import { Item } from '../../../schemas/Item'
 import ItemService from '../../../services/Item'
 import permissions from '../../../permissions.json'
-import { useHistory, useLocation } from 'react-router-dom'
+import { redirect, useLocation } from 'react-router-dom'
 import Utils from '../../../utils'
 import { urls } from '../../../urls'
 
@@ -140,10 +141,8 @@ const initState: State = {
 }
 
 export default function ItemForm() {
-
   const classes = useStyles()
   const { search } = useLocation()
-  const history = useHistory()
 
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
@@ -228,7 +227,7 @@ export default function ItemForm() {
       }
 
       setState(initState)
-      history.push(urls.app.main.item.form)
+      redirect(urls.app.main.item.form)
       return toast.success(`El producto ${itemCreated.code} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {

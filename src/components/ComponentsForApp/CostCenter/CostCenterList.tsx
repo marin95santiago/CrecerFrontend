@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -115,14 +116,14 @@ const initState: State = {
 }
 
 function ActionButtons(props: any) {
+  const navigate = useNavigate()
   const [editPermission, setEditPermission] = useState<boolean>(false)
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
-  const history = useHistory()
 
   const onEdit = () => {
-    history.push(`${urls.app.main.costCenter.form}?code=${props.params.row.code ?? ''}`)
+    navigate(`/${urls.app.index}/${urls.app.main.costCenter.form}?code=${props.params.row.code ?? ''}`)
   }
 
   React.useEffect(() => {
@@ -152,7 +153,7 @@ export default function CostCenterList() {
   React.useEffect(() => {
     async function loadData() {
       const costCenterService = new CostCenterService()
-      const response = await costCenterService.getCostCenters(userContext.token || '', { limit: 5 })
+      const response = await costCenterService.getCostCenters(userContext.token || '', { limit: 10 })
       const responseParsed = response.costCenters.map((costCenter: CostCenter) => {
         return {
           ...costCenter,
@@ -173,7 +174,7 @@ export default function CostCenterList() {
   const onLoadMore = async () => {
     try {
       const costCenterService = new CostCenterService()
-      const response = await costCenterService.getCostCenters(userContext.token || '', { limit: 5, lastEvaluatedKey: state.lastEvaluatedKey })
+      const response = await costCenterService.getCostCenters(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
       const responseParsed = response.costCenters.map((costCenter: CostCenter) => {
         return {
           ...costCenter,

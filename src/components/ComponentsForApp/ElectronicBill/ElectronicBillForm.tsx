@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
-import { Link, useHistory, useLocation } from 'react-router-dom'
+import { Link, redirect, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import {
@@ -264,10 +265,8 @@ const initState: State = {
 }
 
 export default function ElectronicBillForm() {
-
   const classes = useStyles()
   const { search } = useLocation()
-  const history = useHistory()
 
   const [state, setState] = useState(initState)
   const { userContext } = React.useContext(
@@ -463,6 +462,7 @@ export default function ElectronicBillForm() {
       } else if (third.businessName?.toLowerCase().includes(value.toLowerCase())) {
         return third
       }
+      return false
     })
 
     setState({
@@ -500,7 +500,7 @@ export default function ElectronicBillForm() {
         loading: false
       })
 
-      history.push(urls.app.main.electronicBill.form)
+      redirect(urls.app.main.electronicBill.form)
       return toast.success(`Factura creada con éxito`)
     } catch (error) {
 

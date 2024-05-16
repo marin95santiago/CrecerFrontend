@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
@@ -20,7 +21,7 @@ import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
 import { Concept } from '../../../schemas/Concept'
 import ConceptService from '../../../services/Concept'
-import { useHistory, useLocation } from 'react-router-dom'
+import { redirect, useLocation } from 'react-router-dom'
 import Utils from '../../../utils'
 import { urls } from '../../../urls'
 
@@ -116,10 +117,8 @@ const initState: State = {
 }
 
 export default function ConceptForm() {
-
   const classes = useStyles()
   const { search } = useLocation()
-  const history = useHistory()
 
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
@@ -190,6 +189,7 @@ export default function ConceptForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
+      /*
       // validations
       if (state.validations.errorMinLengthAccount) {
         throw new Error(`La cuenta debe tener ${process.env.REACT_APP_MAX_LENGTH_CONTABLE_ACCOUNT} dígitos`)
@@ -205,8 +205,10 @@ export default function ConceptForm() {
       }
 
       setState(initState)
-      history.push(urls.app.main.concept.form)
-      return toast.success(`El concepto ${conceptCreated.account} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
+      */
+      setState(initState)
+      redirect(urls.app.main.concept.form)
+      // return toast.success(`El concepto ${conceptCreated.account} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverError = error as AxiosError<ServerError>

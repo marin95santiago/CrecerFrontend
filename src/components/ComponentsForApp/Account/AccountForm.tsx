@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
@@ -20,7 +21,7 @@ import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
 import { Account } from '../../../schemas/Account'
 import AccountService from '../../../services/Account'
-import { useHistory, useLocation } from 'react-router-dom'
+import { redirect, useLocation } from 'react-router-dom'
 import Utils from '../../../utils'
 import { urls } from '../../../urls'
 import ThirdService from '../../../services/Third'
@@ -124,11 +125,9 @@ const initState: State = {
 }
 
 export default function AccountForm() {
-
   const classes = useStyles()
   const { search } = useLocation()
-  const history = useHistory()
-
+  
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
     UserContext
@@ -228,6 +227,7 @@ export default function AccountForm() {
       } else if (third.businessName?.toLowerCase().includes(value.toLowerCase())) {
         return third
       }
+      return false
     })
 
     setState({
@@ -258,7 +258,7 @@ export default function AccountForm() {
       }
 
       setState(initState)
-      history.push(urls.app.main.account.form)
+      redirect(urls.app.main.account.form)
       return toast.success(`La cuenta ${accountCreated.account} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {
       if (axios.isAxiosError(error)) {

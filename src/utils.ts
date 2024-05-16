@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import jwt from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { ElectronicBillFormSchema, ItemComplete, Tax } from "./schemas/ElectronicBill"
 import userMapper from './mappers/User/user.mapper'
 import { User } from './schemas/User'
@@ -8,7 +8,7 @@ import { Entity } from './schemas/Entity'
 
 const Utils = {
   getUserByCookieAuth: () : User | undefined => {
-    type jwtDecode = {
+    type JwtDecode = {
       data: {
         user: any
       }
@@ -17,14 +17,14 @@ const Utils = {
 
     if (token === undefined) return undefined
 
-    const tokenData = jwt<jwtDecode>(token)
+    const tokenData = jwtDecode<JwtDecode>(token)
     const user = userMapper(tokenData.data.user)
     user.token = token
     return user
   },
 
   getEntityByCookieAuth: () : Entity | undefined => {
-    type jwtDecode = {
+    type JwtDecode = {
       data: {
         entity: any
       }
@@ -33,7 +33,7 @@ const Utils = {
 
     if (token === undefined) return undefined
 
-    const tokenData = jwt<jwtDecode>(token)
+    const tokenData = jwtDecode<JwtDecode>(token)
     const entity = entityMapper(tokenData.data.entity)
     return entity
   },
