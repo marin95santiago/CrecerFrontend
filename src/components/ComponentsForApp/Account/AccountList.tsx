@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -116,14 +115,14 @@ const initState: State = {
 }
 
 function ActionButtons(props: any) {
-  const navigate = useNavigate()
   const [editPermission, setEditPermission] = useState<boolean>(false)
   const { userContext } = React.useContext(
     UserContext
   ) as UserContextType
+  const history = useHistory()
 
   const onEdit = () => {
-    navigate(`/${urls.app.index}/${urls.app.main.account.form}?document=${props.params.row.account ?? ''}`)
+    history.push(`${urls.app.main.account.form}?document=${props.params.row.account ?? ''}`)
   }
 
   React.useEffect(() => {
@@ -153,7 +152,7 @@ export default function AccountList() {
   React.useEffect(() => {
     async function loadData() {
       const accountService = new AccountService()
-      const response = await accountService.getAccounts(userContext.token || '', { limit: 10 })
+      const response = await accountService.getAccounts(userContext.token || '', { limit: 5 })
       setState({
         ...state,
         accounts: response.accounts,
@@ -168,7 +167,7 @@ export default function AccountList() {
   const onLoadMore = async () => {
     try {
       const accountService = new AccountService()
-      const response = await accountService.getAccounts(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
+      const response = await accountService.getAccounts(userContext.token || '', { limit: 5, lastEvaluatedKey: state.lastEvaluatedKey })
       setState({
         ...state,
         accounts: state.accounts.concat(response.accounts),

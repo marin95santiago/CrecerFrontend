@@ -1,11 +1,11 @@
 import axios from 'axios'
-import { jwtDecode } from 'jwt-decode'
+import jwt from 'jwt-decode'
 import Cookies from 'js-cookie'
 import entityMapper from '../../mappers/Entity/entity.mapper'
 import userMapper from '../../mappers/User/user.mapper'
 import { User } from '../../schemas/User'
 
-type JwtDecode = {
+type jwtDecode = {
   data: any
 }
 
@@ -17,7 +17,7 @@ class UserService {
       const responseApi = await axios.post(url, { email, password })
       const response = responseApi.data
       if (!response.token) throw new Error('No recuperó token')
-      const tokenData = jwtDecode<JwtDecode>(response.token)
+      const tokenData = jwt<jwtDecode>(response.token)
       const userData = tokenData.data.user
       const entityData = tokenData.data.entity
       userData.token = response.token

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { urls } from '../../../urls'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
@@ -319,7 +319,7 @@ const initState = {
 export default function MainMenu() {
 
   const classes = useStyles()
-  const navigate = useNavigate()
+  const history = useHistory()
   const [state, setState] = React.useState(initState)
   const { userContext } = React.useContext(
     UserContext
@@ -354,7 +354,7 @@ export default function MainMenu() {
         ...state,
         selected: item.id
       })
-      navigate(item.url)
+      history.push(item.url)
     }
   }
 
