@@ -26,6 +26,7 @@ import ElectronicBillList from '../ElectronicBill/ElectronicBillList'
 import CostCenterForm from '../CostCenter/CostCenterForm'
 import CostCenterList from '../CostCenter/CostCenterList'
 import DailyReportPrint from '../Receipt/DailyReportPrint'
+import ScheduledBillList from '../ElectronicBill/ScheduledBillsList'
 
 // -------------- Styles --------------
 const useStyles = makeStyles((theme: Theme) =>
@@ -174,6 +175,12 @@ export default function ContainerApp() {
             <Route path={urls.app.main.electronicBill.list} element={
               <ProtectRoute>
                 <ElectronicBillList />
+              </ProtectRoute>
+            }/>
+
+            <Route path={urls.app.main.electronicBill.schedule_list} element={
+              <ProtectRoute>
+                <ScheduledBillList />
               </ProtectRoute>
             }/>
             

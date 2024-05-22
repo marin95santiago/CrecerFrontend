@@ -34,7 +34,8 @@ export const urls = {
         },
         electronicBill: {
           form: 'electronic-bill/form',
-          list: 'electronic-bill/list'
+          list: 'electronic-bill/list',
+          schedule_list: 'electronic-bill/schedule/list'
         },
         internalTransaction: {
           form: 'internal-transaction/form',

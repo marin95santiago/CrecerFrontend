@@ -14,7 +14,7 @@ import {
   CircularProgress
 } from '@material-ui/core'
 import { GridColDef } from '@material-ui/data-grid'
-import { CloudDownload, Visibility, PostAdd } from '@material-ui/icons'
+import { CloudDownload, Delete, Visibility } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import { UserContextType } from '../../../schemas/User'
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 // - in this part all the component texts are housed
 const texts = {
   header: {
-    description: 'Lista de facturas emitidas'
+    description: 'Lista de programaciones'
   },
   body: {
     buttonLoadMore: {
@@ -71,28 +71,28 @@ const texts = {
 
 const columns: GridColDef[] = [
   {
-    field: 'number',
-    headerName: 'Factura',
-    width: 150,
+    field: 'name',
+    headerName: 'Nombre',
+    width: 400,
     editable: false,
   },
   {
-    field: 'date',
-    headerName: 'Fecha',
+    field: 'idForm',
+    headerName: 'Factura base',
     width: 200,
     editable: false,
   },
   {
-    field: 'third',
-    headerName: 'Nombre',
+    field: 'startDate',
+    headerName: 'Inicio',
     editable: false,
-    width: 350,
+    width: 150,
   },
   {
-    field: 'note',
-    headerName: 'Descripción',
+    field: 'endDate',
+    headerName: 'Fin',
     editable: false,
-    width: 400,
+    width: 150,
   },
   {
     field: 'actions',
@@ -109,62 +109,60 @@ const columns: GridColDef[] = [
 interface State {
   loadMoreButtonDisabled: boolean
   lastEvaluatedKey?: string
-  electronicBills: any[]
+  schedules: any[]
   loading: boolean
 }
 
 const initState: State = {
   loadMoreButtonDisabled: false,
-  electronicBills: [],
+  schedules: [],
   loading: true
 }
 
 function ActionButtons(props: any) {
   const navigate = useNavigate()
+  const { userContext } = React.useContext(
+    UserContext
+  ) as UserContextType
 
   const onView = () => {
-    navigate(`/${urls.app.index}/${urls.app.main.electronicBill.form}?number=${props.params.row.number ?? ''}`)
+    navigate(`/${urls.app.index}/${urls.app.main.electronicBill.form}?number=${props.params.row.idForm ?? ''}`)
   }
 
-  const onCopy = () => {
-    navigate(`/${urls.app.index}/${urls.app.main.electronicBill.form}?number=${props.params.row.number ?? ''}&copy=true`)
-  }
-
-  const onDownload = () => {
-    if (props.params.row.preview !== undefined) {
-      return window.open(props.params.row.preview, '_blank')
-    } else {
-      return toast.warn('Factura disponible ingresando a la visualización')
+  const onDelete = async () => {
+    try {
+      const electronicBillService= new ElectronicBillService()
+      await electronicBillService.deleteSchedule(userContext.token ?? '', props.params.row.code)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverError = error as AxiosError<ServerError>
+        if (serverError && serverError.response) {
+          return toast.error(serverError.response.data.message)
+        }
+      }
     }
   }
 
   return (
     <React.Fragment>
-      <IconButton
-        type="submit"
-        onClick={() => onView()}
-      >
-        <Visibility fontSize={"small"} color="primary" />
-      </IconButton>
-
-      <IconButton
-        type="submit"
-        onClick={() => onCopy()}
-      >
-        <PostAdd fontSize={"small"} color="action" />
-      </IconButton>
-
-      <IconButton
-        type="submit"
-        onClick={() => onDownload()}
-      >
-        <CloudDownload fontSize={"small"} color="action" />
-      </IconButton>
+      <form onSubmit={() => onDelete()}>
+        <IconButton
+          onClick={() => onView()}
+        >
+          <Visibility fontSize={"small"} color="primary" />
+        </IconButton>
+    
+        <IconButton
+          type="submit"
+        >
+          <Delete fontSize={"small"} color="error" />
+        </IconButton>
+      </form>
     </React.Fragment>
   )
 }
 
-export default function ElectronicBillList() {
+export default function ScheduledBillList() {
 
   const classes = useStyles()
 
@@ -176,15 +174,10 @@ export default function ElectronicBillList() {
   React.useEffect(() => {
     async function loadData() {
       const electronicBillService= new ElectronicBillService()
-      const response = await electronicBillService.getElectronicBills(userContext.token || '', { limit: 10 })
+      const response = await electronicBillService.getSchedules(userContext.token || '', { limit: 10 })
       setState({
         ...state,
-        electronicBills: response.electronicBills.map((bill: any) =>{
-          return {
-            ...bill,
-            third: bill.third.businessName !== undefined ? `${bill.third.businessName}` : `${bill.third.name} ${bill.third.lastname}`
-          }
-        }),
+        schedules: response.schedules,
         lastEvaluatedKey: response.lastEvaluatedKey,
         loadMoreButtonDisabled: response.lastEvaluatedKey !== undefined ? false : true,
         loading: false
@@ -196,16 +189,11 @@ export default function ElectronicBillList() {
   const onLoadMore = async () => {
     try {
       const electronicBillService= new ElectronicBillService()
-      const response = await electronicBillService.getElectronicBills(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
-      const newBills = response.electronicBills.map((bill: any) =>{
-        return {
-          ...bill,
-          third: bill.third.businessName !== undefined ? `${bill.third.businessName}` : `${bill.third.name} ${bill.third.lastname}`
-        }
-      })
+      const response = await electronicBillService.getSchedules(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
+      const newSchedules = response.schedules
       setState({
         ...state,
-        electronicBills: state.electronicBills.concat(newBills),
+        schedules: state.schedules.concat(newSchedules),
         lastEvaluatedKey: response.lastEvaluatedKey,
         loadMoreButtonDisabled: response.lastEvaluatedKey !== undefined ? false : true
       })
@@ -239,7 +227,7 @@ export default function ElectronicBillList() {
 
         {/* ----- Form: item thrid type ------*/}
         <Grid item md={12} sm={12} xs={12}>
-          <DataTable rows={state.electronicBills} columns={columns} keyId='number' />
+          <DataTable rows={state.schedules} columns={columns} keyId='code' />
         </Grid>
 
         <Grid item md={12} sm={6} xs={12} className={classes.alignRight}>
