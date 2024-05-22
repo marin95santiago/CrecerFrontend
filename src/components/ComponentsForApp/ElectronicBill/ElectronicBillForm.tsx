@@ -18,9 +18,12 @@ import {
   Checkbox,
   Box,
   CircularProgress,
-  InputAdornment
+  InputAdornment,
+  Card,
+  CardHeader,
+  Avatar
 } from '@material-ui/core'
-import { Cancel, NoteAdd, Save, ArrowDropDown, ArrowDropUp } from '@material-ui/icons'
+import { Cancel, NoteAdd, Save, ArrowDropDown, ArrowDropUp, Schedule, Delete } from '@material-ui/icons'
 import { ServerError } from '../../../schemas/Error'
 import UserContext from '../../../contexts/User'
 import EntityContext from '../../../contexts/Entity'
@@ -28,7 +31,7 @@ import ThirdsContext from '../../../contexts/Third'
 import { EntityContextType } from '../../../schemas/Entity'
 import { UserContextType } from '../../../schemas/User'
 import { ThirdsContextType } from '../../../schemas/Third'
-import { ElectronicBillFormSchema } from '../../../schemas/ElectronicBill'
+import { ElectronicBillFormSchema, ScheduleForm } from '../../../schemas/ElectronicBill'
 import ElectronicBillService from '../../../services/ElectronicBill'
 import Utils from '../../../utils'
 import ItemTable from './ItemTable'
@@ -37,6 +40,8 @@ import ElectronicBillMapper from '../../../mappers/ElectronicBill/electronicBill
 import ItemService from '../../../services/Item'
 import PlemsiService from '../../../services/Plemsi'
 import { urls } from '../../../urls'
+import ScheduleModal from './ScheduleModal'
+import permissions from '../../../permissions.json'
 
 // -------------- Styles ---------------
 const useStyles = makeStyles((theme: Theme) => ({
@@ -75,6 +80,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     height: '70%',
     color: '#ffff',
+  }, 
+  avatarSchedule: {
+    color: 'primary',
+    backgroundColor: '#ffff',
   }
 }))
 
@@ -205,12 +214,17 @@ const texts = {
     subtitles: {
       payment: 'Información acerca del pago',
       itemsTable: 'Tabla de productos a facturar',
-      total: 'Información acerca de los totales de la factura'
+      total: 'Información acerca de los totales de la factura',
+      scheduleTitle: 'Programar Factura',
+      scheduleDescription: 'automatice su factura de forma periódica'
     },
     buttons: {
       addProduct: {
         title: 'Agregar'
       }
+    },
+    errors: {
+      incompletedScheduleForm: 'Debe completar los campos requeridos para programar una factura'
     }
   }
 }
@@ -228,6 +242,8 @@ interface State {
   status: boolean
   thirdSelected?: string
   suggestionsThirds: any[]
+  showScheduleModal: boolean
+  scheduledBill: boolean
 }
 
 const initState: State = {
@@ -261,7 +277,9 @@ const initState: State = {
   disabledForm: false,
   status: false,
   thirdSelected: '',
-  suggestionsThirds: []
+  suggestionsThirds: [],
+  showScheduleModal: false,
+  scheduledBill: false
 }
 
 export default function ElectronicBillForm() {
@@ -598,6 +616,33 @@ export default function ElectronicBillForm() {
         preview: undefined
       })
     }
+  }
+
+  const handleScheduleModal = (show: boolean) => { 
+    setState({
+      ...state,
+      showScheduleModal: show
+    })
+  }
+
+  const handleScheduleForm = (formSchedule: ScheduleForm) => {
+    if (
+      !formSchedule.name ||
+      !formSchedule.startDate ||
+      !formSchedule.intervalDays
+    ) {
+      return toast.error(texts.body.errors.incompletedScheduleForm)
+    }
+
+    setState({
+      ...state,
+      form: {
+        ...state.form,
+        scheduleForm: formSchedule
+      },
+      scheduledBill: true,
+      showScheduleModal: false
+    })
   }
 
   return (
@@ -999,6 +1044,59 @@ export default function ElectronicBillForm() {
               placeholder={texts.body.field.totalToPay.placeholder}
             />
           </Grid>
+
+          {/* --- Schedule --- */}
+
+          {
+            (!state.disabledForm && userContext.permissions.includes(permissions.electronic_bill.schedule_create)) ?
+            (
+              state.form.scheduleForm ? (
+                <Card style={{ marginTop: '5vh'}}>
+                  <CardHeader
+                    avatar={
+                      <Avatar className={classes.avatarSchedule} aria-label="recipe" >
+                        <Schedule color='primary' />
+                      </Avatar>
+                    }
+                    action={
+                      <IconButton
+                        onClick={() => setState({
+                          ...state,
+                          form: {
+                            ...state.form,
+                            scheduleForm: undefined
+                          },
+                          scheduledBill: false
+                        })}
+                      >
+                        <Delete fontSize='small' />
+                      </IconButton>
+                    }
+                    title={state.form.scheduleForm.name}
+                    subheader={state.form.scheduleForm.startDate}
+                  />
+                </Card>
+              ) : (
+                <Box
+                  onClick={() => handleScheduleModal(true)}
+                >
+                  <Card style={{ marginTop: '5vh'}}>
+                    <CardHeader
+                      avatar={
+                        <Avatar className={classes.avatarSchedule} aria-label="recipe" >
+                          <Schedule color='primary' />
+                        </Avatar>
+                      }
+                      title={texts.body.subtitles.scheduleTitle}
+                      subheader={texts.body.subtitles.scheduleDescription}
+                    />
+                  </Card>
+
+                </Box>
+              )
+            ) : ''
+          }
+
           {
             !state.disabledForm ?
             (
@@ -1022,7 +1120,7 @@ export default function ElectronicBillForm() {
             state.preview !== undefined ?
               (
                 <Grid item md={12} sm={12} xs={12} className={classes.alignRight}>
-                  <Link to={{ pathname: state.preview }} target='_blank' onClick={onPreviewBill}>
+                  <Link to={state.preview} target='_blank' onClick={onPreviewBill}>
                     Descargue su factura
                   </Link>
                 </Grid>
@@ -1040,6 +1138,7 @@ export default function ElectronicBillForm() {
             </div>
           ) : ''
       }
+      <ScheduleModal show={state.showScheduleModal} handleScheduleForm={handleScheduleForm} handleModal={handleScheduleModal} />
     </div>
   )
 }
