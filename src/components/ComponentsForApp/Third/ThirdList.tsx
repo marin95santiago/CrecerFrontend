@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -124,10 +123,11 @@ const initState: State = {
 }
 
 function ActionButtons(props: any) {
-  const navigate = useNavigate()
+
+  const history = useHistory()
 
   const onEdit = () => {
-    navigate(`/${urls.app.index}/${urls.app.main.third.form}?document=${props.params.row.document ?? ''}`)
+    history.push(`${urls.app.main.third.form}?document=${props.params.row.document ?? ''}`)
   }
 
   return (
@@ -152,7 +152,7 @@ export default function ThirdList() {
   React.useEffect(() => {
     async function loadData() {
       const thirdService = new ThirdService()
-      const response = await thirdService.getThirds(userContext.token || '', { limit: 10 })
+      const response = await thirdService.getThirds(userContext.token || '', { limit: 5 })
       setState({
         ...state,
         thirds: response.thirds,
@@ -167,7 +167,7 @@ export default function ThirdList() {
   const onLoadMore = async () => {
     try {
       const thirdService = new ThirdService()
-      const response = await thirdService.getThirds(userContext.token || '', { limit: 10, lastEvaluatedKey: state.lastEvaluatedKey })
+      const response = await thirdService.getThirds(userContext.token || '', { limit: 5, lastEvaluatedKey: state.lastEvaluatedKey })
       setState({
         ...state,
         thirds: state.thirds.concat(response.thirds),

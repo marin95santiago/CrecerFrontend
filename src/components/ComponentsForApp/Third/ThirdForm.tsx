@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { redirect, useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -220,9 +219,11 @@ const initState: State = {
 }
 
 export default function ThirdForm() {
+
   const classes = useStyles()
   const { search } = useLocation()
-  
+  const history = useHistory()
+
   const [state, setState] = useState<State>(initState)
   const { userContext } = React.useContext(
     UserContext
@@ -339,7 +340,7 @@ export default function ThirdForm() {
         loading: false
       })
 
-      redirect(urls.app.main.third.form)
+      history.push(urls.app.main.third.form)
 
       return toast.success(`El tercero ${thirdCreated.document} fue ${state.isEdit ? 'actualizado' : 'creado'} con éxito`)
     } catch (error) {

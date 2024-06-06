@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import UserContext from '../../../contexts/User'
@@ -103,7 +102,8 @@ function Copyright() {
   )
 }
 
-export default function Login() {
+export default function SignIn() {
+
   const { userContext, setUserContext } = React.useContext(
     UserContext
   ) as UserContextType
@@ -112,14 +112,14 @@ export default function Login() {
     EntityContext
   ) as EntityContextType
 
-  const navigate = useNavigate()
+  const history = useHistory()
   const classes = useStyles()
   const [state, setState] = useState<LoginForm>(initState)
 
 
   React.useEffect(() => {
     if (userContext?.id) {
-      navigate(`/${urls.app.index}/${urls.app.main.home}`)
+      history.push(urls.app.main.home)
     }
   }, [])
 
@@ -152,7 +152,7 @@ export default function Login() {
         }
       }
     }
-    navigate(`/${urls.app.index}/${urls.app.main.home}`)
+    history.push(urls.app.main.home)
   }
 
   return (
