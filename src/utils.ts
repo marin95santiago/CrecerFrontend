@@ -60,8 +60,8 @@ const Utils = {
       }
     } else {
       tax = {
-        code: '1',
-        description: 'Iva',
+        code: '19',
+        description: 'No aplica',
         percent: 0,
         taxAmount: 0,
         taxableAmount: (form.currentQuantity * form.currentPrice)

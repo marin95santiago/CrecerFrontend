@@ -41,7 +41,8 @@ const electronicBillMapper = {
       taxes: Utils.buildTaxesForElectronicBill(items),
       total: form.total,
       totalTaxes: form.totalTaxes,
-      totalToPay: form.totalToPay
+      totalToPay: form.totalToPay,
+      scheduleForm: form.scheduleForm
     }
   },
 

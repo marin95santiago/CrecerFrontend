@@ -23,7 +23,8 @@ import {
   Category,
   List as ListIcon,
   AccountBalanceWallet,
-  Store
+  Store,
+  Schedule
 } from '@material-ui/icons'
 import { Collapse, Typography } from '@material-ui/core'
 import permissions from '../../../permissions.json'
@@ -293,6 +294,13 @@ const initState = {
               icon: <Description/>,
               permission: permissions.electronic_bill.view,
               url: urls.app.main.electronicBill.list
+            },
+            {
+              id: '008-03',
+              title: 'Listar programaciones',
+              icon: <Schedule/>,
+              permission: permissions.electronic_bill.schedule_view,
+              url: urls.app.main.electronicBill.schedule_list
             }
           ]
         }

@@ -30,7 +30,9 @@
   },
   "electronic_bill": {
     "view": "electronic_bill_view",
-    "create": "electronic_bill_create"
+    "create": "electronic_bill_create",
+    "schedule_create": "electronic_bill_schedule_create",
+    "schedule_view": "electronic_bill_schedule_view"
   },
   "concept":{
     "view": "concept_view",

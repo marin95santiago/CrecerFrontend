@@ -36,6 +36,17 @@ export interface ElectronicBill {
   total: number
   totalTaxes: number
   totalToPay: number
+  scheduleForm?: ScheduleForm
+}
+
+export interface ScheduleForm {
+  startDate: string
+  endDate?: string
+  name: string
+  intervalDays: string
+  entity?: string
+  code?: string
+  idForm?: string
 }
 
 export interface ElectronicBillFormSchema {
@@ -63,4 +74,5 @@ export interface ElectronicBillFormSchema {
     description: string
   }
   currentPercentTax: number
+  scheduleForm?: ScheduleForm
 }
